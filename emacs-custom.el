@@ -1,9 +1,3 @@
-(add-to-list 'load-path "~/.emacs.d")
-(add-to-list 'load-path "~/.emacs.d/auto-install")
-
-(require 'load-dir)
-(load-dir "~/.emacs.d/setup")
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -33,6 +27,7 @@
  '(global-visual-line-mode t)
  '(global-whitespace-mode nil)
  '(ido-mode (quote both) nil (ido))
+ '(indent-tabs-mode nil)
  '(ispell-extra-args (quote ("--sug-mode=ultra")))
  '(ispell-program-name "c:/cygwin/bin/aspell.exe")
  '(ls-lisp-dirs-first t)
