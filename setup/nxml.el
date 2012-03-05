@@ -135,81 +135,80 @@
     ("row". ("entry"))
     ("entry" . ("emphasis" "code"))))
 
-(defvar nxml-docbook-last-common-element nil)
+(defvar nxml-docbook-common-elements-next-args nil)
 
-(defun nxml-docbook-make-common-element (&optional surrounding)
-  (interactive "P")
-  (let ((start (set-marker (make-marker) (point)))
-        (end (set-marker (make-marker) (point)))
-        do-region)
-    (when (or (region-active-p)
-              (and (eq real-last-command 'nxml-docbook-make-common-element)
-                   (car nxml-docbook-last-common-element))
-              surrounding)
-      (save-excursion
-        (set-marker start 
-                    (if (region-active-p) 
-                        (region-beginning) 
-                      (nxml-backward-up-element) 
-                      (save-excursion 
-                        (skip-chars-forward "^>") 
-                        (forward-char 1) 
-                        (point))))
-        (set-marker end 
-                    (if (region-active-p)
-                        (region-end)
-                      (nxml-forward-balanced-item)
-                      (skip-chars-backward "^<")
-                      (forward-char -1)
-                      (point))))
-      (message "do-mark %s %s" start end)
-      (setq do-region t))
-    (message "cycle? %s %s" real-last-command nxml-docbook-last-common-element)
-    (when (or (and (eq real-last-command 'nxml-docbook-make-common-element)
-                   (cdr nxml-docbook-last-common-element))
-              surrounding)
-      (delete-region (save-excursion (skip-chars-backward "^<") (1- (point))) start)
-      (delete-region end (save-excursion (skip-chars-forward "^>") (1+ (point)))))
-    (let* ((token-end (nxml-token-before)) 
-           (start-tag-end
-            (save-excursion
-              (when (and (< (point) token-end)
-                         (memq xmltok-type
-                               '(cdata-section
-                                 processing-instruction
-                                 comment
-                                 start-tag
-                                 end-tag
-                                 empty-element)))
-                (setq nxml-docbook-last-common-element nil)
-                (error "Point is inside a %s"
-                       (nxml-token-type-friendly-name xmltok-type)))
-              (nxml-scan-element-backward token-end t)))
-           (context (xmltok-start-tag-qname))
-           (elements (cdr (assoc context nxml-docbook-common-elements)))
+(defun nxml-docbook-make-common-element (&optional start end kill-tag use-index old-tag)
+  (interactive (cond ((and (eq real-last-command 'nxml-docbook-make-common-element)
+                           nxml-docbook-common-elements-next-args)
+                      nxml-docbook-common-elements-next-args)
+                     (current-prefix-arg
+                      (save-excursion
+                        (nxml-backward-up-element)
+                        (let ((tag (xmltok-start-tag-qname)))
+                          (list (save-excursion 
+                                  (skip-chars-forward "^>") 
+                                  (forward-char 1) 
+                                  (point))
+                                (progn
+                                  (nxml-forward-balanced-item)
+                                  (skip-chars-backward "^<")
+                                  (forward-char -1)
+                                  (point))
+                                t nil tag))))
+                     ((region-active-p)
+                      (list (region-beginning) (region-end) nil))))
+  (setq nxml-docbook-common-elements-next-args nil)
+  (let ((start (set-marker (make-marker) (or start (point))))
+        (end (set-marker (make-marker) (or end (point)))))
+    (when kill-tag
+      (delete-region (save-excursion (goto-char start) (skip-chars-backward "^<") (1- (point))) start)
+      (delete-region end (save-excursion (goto-char end) (skip-chars-forward "^>") (1+ (point)))))
+    (save-excursion
+      (goto-char start)
+      (let* ((token-end (nxml-token-before))
+             (start-tag-end
+              (save-excursion
+                (when (and (< (point) token-end)
+                           (memq xmltok-type
+                                 '(cdata-section
+                                   processing-instruction
+                                   comment
+                                   start-tag
+                                   end-tag
+                                   empty-element)))
+                  (error "Point is inside a %s"
+                         (nxml-token-type-friendly-name xmltok-type)))
+                (nxml-scan-element-backward token-end t)))
+             (context (xmltok-start-tag-qname))
+             (elements (cdr (assoc context nxml-docbook-common-elements)))
 ; List valid start tags at point (using schema):
 ; (let ((lt-pos (point))) (rng-set-state-after lt-pos) (loop for (ns . name) in (rng-match-possible-start-tag-names) collect name))
-           (index (if (and elements
-                           (eq real-last-command 'nxml-docbook-make-common-element)
-                           (cdr nxml-docbook-last-common-element))
-                      (1+ (cdr nxml-docbook-last-common-element))
-                    0))
+           (index (or (and elements
+                           (or use-index
+                               (and old-tag
+                                    (loop for i from 0
+                                          for elt in elements
+                                          if (string= elt old-tag) return (1+ i)
+                                          finally return 0))))
+                      0))
            (element (and elements (nth index elements))))
-      (when (not elements)
-        (setq nxml-docbook-last-common-element nil)
-        (error "No common elements for %s" context))
-      (if element
-          (progn
-            (goto-char start)
-            (insert-before-markers "<" element ">")
-            (goto-char end)
-            (insert "</" element ">")
-            (goto-char end)
-            (setq nxml-docbook-last-common-element (cons do-region index)))
-        (setq nxml-docbook-last-common-element (cons do-region nil)))
-      (when do-region
-        (set-mark start)
-        (message  "Fiddlesticks: %s %s %s" (mark t) mark-active (region-active-p))))))
+        (when (not elements)
+          (error "No common elements for %s" context))
+        (if element
+            (progn
+              (goto-char start)
+              (insert-before-markers "<" element ">")
+              (goto-char end)
+              (insert "</" element ">")
+              (goto-char end)
+              (setq nxml-docbook-common-elements-next-args (list (marker-position start)
+                                                                 (marker-position end)
+                                                                 t
+                                                                 (1+ index))))
+          (setq nxml-docbook-common-elements-next-args (list (marker-position start)
+                                                             (marker-position end)
+                                                             nil
+                                                             0)))))))
 
 (defun nxml-just-one-space-or-skip-end ()
   (interactive)
