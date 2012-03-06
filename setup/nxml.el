@@ -112,7 +112,7 @@
 (define-key nxml-mode-map (kbd "\C-c\C-c") 'recompile)
 
 (defconst nxml-docbook-common-elements
-  '(("section" . ("para" "itemizedlist" "variablelist" "section" "bridgehead" "task" "procedure"))
+  '(("section" . ("para" "itemizedlist" "variablelist" "section" "bridgehead" "task" "procedure" "title"))
     ("para" . ("emphasis" "code" "replaceable"))
     ("emphasis" . ("code"))
     ("itemizedlist" . ("listitem"))
@@ -121,7 +121,7 @@
     ("varlistentry" . ("term" "listitem"))
     ("term" . ("emphasis" "code"))
     ("listitem" . ("para" "itemizedlist"))
-    ("task" . ("tasksummary" "procedure"))
+    ("task" . ("tasksummary" "procedure" "title"))
     ("tasksummary" . ("para"))
     ("procedure" . ("step"))
     ("step" . ("para" "procedure"))
@@ -137,7 +137,7 @@
 
 (defvar nxml-docbook-common-elements-next-args nil)
 
-(defun nxml-docbook-make-common-element (&optional start end kill-tag use-index old-tag)
+(defun nxml-docbook-make-common-element (&optional start end kill-tag use-index old-tag valid)
   (interactive (cond ((and (eq real-last-command 'nxml-docbook-make-common-element)
                            nxml-docbook-common-elements-next-args)
                       nxml-docbook-common-elements-next-args)
@@ -180,18 +180,25 @@
                          (nxml-token-type-friendly-name xmltok-type)))
                 (nxml-scan-element-backward token-end t)))
              (context (xmltok-start-tag-qname))
-             (elements (cdr (assoc context nxml-docbook-common-elements)))
-; List valid start tags at point (using schema):
-; (let ((lt-pos (point))) (rng-set-state-after lt-pos) (loop for (ns . name) in (rng-match-possible-start-tag-names) collect name))
-           (index (or (and elements
-                           (or use-index
-                               (and old-tag
-                                    (loop for i from 0
-                                          for elt in elements
-                                          if (string= elt old-tag) return (1+ i)
-                                          finally return 0))))
-                      0))
-           (element (and elements (nth index elements))))
+             (common-elements (cdr (assoc context nxml-docbook-common-elements)))
+             (valid-elements (or valid
+                                 (let ((lt-pos (point))) 
+                                   (rng-set-state-after lt-pos) 
+                                   (loop for (ns . name) in (rng-match-possible-start-tag-names) 
+                                         if (not (member name elements)) collect name into elements
+                                         finally return elements))))
+             (elements (loop for element in common-elements
+                             if (member element valid-elements) collect element))
+             (index (or (and elements
+                             (or use-index
+                                 (and old-tag
+                                      (loop for i from 0
+                                            for elt in elements
+                                            if (string= elt old-tag) return (1+ i)
+                                            finally return 0))))
+                        0))
+             (element (and elements (nth index elements))))
+        (message "!elements %s %s %s" common-elements valid-elements elements)
         (when (not elements)
           (error "No common elements for %s" context))
         (if element
@@ -204,11 +211,13 @@
               (setq nxml-docbook-common-elements-next-args (list (marker-position start)
                                                                  (marker-position end)
                                                                  t
-                                                                 (1+ index))))
+                                                                 (1+ index)
+                                                                 valid-elements)))
           (setq nxml-docbook-common-elements-next-args (list (marker-position start)
                                                              (marker-position end)
                                                              nil
-                                                             0)))))))
+                                                             0
+                                                             valid-elements)))))))
 
 (defun nxml-just-one-space-or-skip-end ()
   (interactive)
