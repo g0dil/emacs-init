@@ -1,27 +1,32 @@
 (add-to-list 'load-path "~/.emacs.d/magit")
 (require 'magit)
-(require 'advice)
 (require 'cl)
 
-(setf (symbol-function 'builtin-process-file) (symbol-function 'process-file))
+(when (eq system-type 'windows-nt)
 
-(defvar my-magit-shell "c:\\Program Files (x86)\\Git\\bin\\sh")
+  (require 'advice)
 
-(defun my-magit-process-file (program &optional infile buffer display &rest args)
-  (builtin-process-file my-magit-shell infile buffer display 
-			"-c" (mapconcat 'shell-quote-argument (cons "/bin/git" args) " ")))
+  (setf (symbol-function 'builtin-process-file) (symbol-function 'process-file))
 
-(defadvice magit-cmd-output (around my-magit-process-file activate)
-  (letf (((symbol-function 'process-file) (symbol-function 'my-magit-process-file)))
-    ad-do-it))
+  (defvar my-magit-shell "c:\\Program Files (x86)\\Git\\bin\\sh")
 
-(defadvice magit-git-exit-code (around my-magit-process-file activate)
-  (letf (((symbol-function 'process-file) (symbol-function 'my-magit-process-file)))
-    ad-do-it))
+  (defun my-magit-process-file (program &optional infile buffer display &rest args)
+    (builtin-process-file my-magit-shell infile buffer display
+                          "-c" (mapconcat 'shell-quote-argument (cons "/bin/git" args) " ")))
 
-(defadvice magit-run (around activate)
-  (letf (((symbol-function 'process-file) (symbol-function 'my-magit-process-file)))
-    ad-do-it))
+  (defadvice magit-cmd-output (around my-magit-process-file activate)
+    (letf (((symbol-function 'process-file) (symbol-function 'my-magit-process-file)))
+      ad-do-it))
+
+  (defadvice magit-git-exit-code (around my-magit-process-file activate)
+    (letf (((symbol-function 'process-file) (symbol-function 'my-magit-process-file)))
+      ad-do-it))
+
+  (defadvice magit-run (around activate)
+    (letf (((symbol-function 'process-file) (symbol-function 'my-magit-process-file)))
+      ad-do-it))
+
+); End Windows-NT
 
 (global-set-key "\C-cGS" 'magit-status)
 
@@ -59,6 +64,6 @@
     (if (not dir) (error "No git repository"))
     (if arg (setq symbol (read-string "Symbol: " nil nil symbol)))
     (let ((default-directory dir))
-      (grep (format "git ls-files -z | xargs -r0 grep -nHF %s | cat -" symbol)))))
+      (grep (format "git ls-files -z | xargs -r0 grep -nwHF %s | cat -" symbol)))))
 
 (global-set-key "\C-cGF" 'git-files-find-symbol)

@@ -1,0 +1,13 @@
+
+See http://hide1713.wordpress.com/2009/01/30/setup-perfect-python-environment-in-emacs/
+
+Install the following packages:
+
+        yasnippet
+        pymacs
+        python-rope
+        python-ropemacs
+        pyflakes
+
+then load 'setup.el' from your emacs startup. The current Version has
+lots of stuff disabled.

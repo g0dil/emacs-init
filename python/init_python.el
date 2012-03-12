@@ -10,7 +10,7 @@
         (define-key py-mode-map (kbd "RET") 'newline-and-indent)
         ;(define-key py-mode-map [tab] 'yas/expand)
         ;(setq yas/after-exit-snippet-hook 'indent-according-to-mode)
-        (smart-operator-mode-on)
+        ;(smart-operator-mode-on)
         ))
 ;; pymacs
 (autoload 'pymacs-apply "pymacs")
@@ -192,5 +192,3 @@ is ignored (Those are the file local variables and local words)."
   (flyspell-mode t))
 
 (provide 'init_python)
-
-
