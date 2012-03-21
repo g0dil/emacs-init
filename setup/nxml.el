@@ -39,6 +39,17 @@
 		 (mapconcat 'identity (nconc path-to-id path-rest) "/"))))
   
 (require 'which-func)
+(which-func-mode)
+
+(delete (assoc 'which-func-mode mode-line-format) mode-line-format)
+(setq which-func-header-line-format
+              '(which-func-mode
+                ("" which-func-format
+                 )))
+(defadvice which-func-ff-hook (after header-line activate)
+  (when which-func-mode
+    (delete (assoc 'which-func-mode mode-line-format) mode-line-format)
+    (setq header-line-format which-func-header-line-format)))
 
 (add-to-list 'which-func-functions 'nxml-where)
 (add-to-list 'which-func-modes 'nxml-mode)
@@ -119,10 +130,10 @@
     ("orderedlist" . ("listitem"))
     ("variablelist" . ("varlistentry"))
     ("varlistentry" . ("term" "listitem"))
-    ("term" . ("emphasis" "code"))
+    ("term" . ("emphasis" "code" "replaceable"))
     ("listitem" . ("para" "itemizedlist"))
     ("task" . ("tasksummary" "procedure" "title"))
-    ("tasksummary" . ("para"))
+    ("tasksummary" . ("para" "itemizedlist" "variablelist"))
     ("procedure" . ("step"))
     ("step" . ("para" "procedure"))
     ("mathphrase" . ("replaceable" "superscript" "subscript"))
@@ -198,7 +209,6 @@
                                             finally return 0))))
                         0))
              (element (and elements (nth index elements))))
-        (message "!elements %s %s %s" common-elements valid-elements elements)
         (when (not elements)
           (error "No common elements for %s" context))
         (if element
@@ -232,10 +242,36 @@
 
 (defun nxml-open-line ()
   (interactive)
-  (open-line 1)
-  (save-excursion
-    (forward-line 1)
-    (indent-according-to-mode))
-  (newline-and-indent))
+  (if (region-active-p)
+      (let ((start (region-beginning))
+            (end (region-end))
+            chars)
+        (save-excursion
+          (goto-char end)
+          (newline-and-indent)
+          (goto-char start)
+          (setq chars (- (- (point) (progn (newline-and-indent) (point)))))
+          (indent-region (+ start chars) (+ end chars))))
+    (open-line 1)
+    (save-excursion
+      (forward-line 1)
+      (indent-according-to-mode))
+    (newline-and-indent)))
+
+(defun nxml-split-element ()
+  (interactive)
+  (let (element block-p)
+    (save-excursion
+      (nxml-backward-up-element)
+      (setq element (xmltok-start-tag-qname)
+            block-p (looking-back "^\s-*" (save-excursion (beginning-of-line) (point)))))
+    (delete-horizontal-space)
+    (insert "</" element ">")
+    (fill-paragraph)
+    (insert "\n")
+    (newline-and-indent)
+    (insert "<" element ">")
+    (fill-paragraph)))
 
 (define-key nxml-mode-map (kbd "M-o") 'nxml-open-line)
+(define-key nxml-mode-map (kbd "S-<return>") 'nxml-split-element)
