@@ -7,4 +7,4 @@
 (global-set-key "\C-c'g" 'toggle-debug-on-quit)
 (global-set-key "\C-c'c" 'toggle-case-fold-search)
 (global-set-key "\C-c's" 'flyspell-mode)
-(global-set-key (kbd "C-+") ' goto-last-change)
+(global-set-key "\C-c'a" 'global-auto-revert-mode)

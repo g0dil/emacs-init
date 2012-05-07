@@ -1,3 +1,5 @@
+(require 'xquery-mode)
+
 (add-to-list 'auto-mode-alist '("\\.[Xx][Qq][Uu][Ee][Rr][Yy]\\'" . xquery-mode))
 
 (defvar dbxml-shell-filename "dbxml")
