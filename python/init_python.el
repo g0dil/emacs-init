@@ -22,6 +22,15 @@
 ;;  '(add-to-list 'pymacs-load-path YOUR-PYMACS-DIRECTORY"))
 (pymacs-load "ropemacs" "rope-")
 (setq ropemacs-enable-autoimport t)
+
+;; M-/               rope-code-assist
+;; C-c g             rope-goto-definition
+;; C-c d             rope-show-doc
+;; C-c f             rope-find-occurrences
+;; M-?               rope-lucky-assist
+
+(define-key ropemacs-local-keymap "\M-/" 'hippie-expand)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Auto-completion
 ;;;  Integrates:
@@ -107,7 +116,7 @@
                '("\\.py\\'" flymake-pyflakes-init)))
 (add-hook 'find-file-hook 'flymake-find-file-hook)
 
-(defun py-cleanup-imports ()
+(defun py-cleanup-imports (&optional nowait)
   (interactive)
   (let (beg end)
     (if (region-active-p)
@@ -150,7 +159,7 @@
             (insert "\n" prefix))
           (forward-line 1)))
       (sort-lines nil b (point))
-      (if (boundp flymake-is-running)
+      (if (and (not nowait) (boundp flymake-is-running))
           (progn
             (while flymake-is-running (sit-for .1))
             (flymake-start-syntax-check)
