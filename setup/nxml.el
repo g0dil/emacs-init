@@ -6,38 +6,49 @@
 (defun nxml-where ()
   "Display the hierarchy of XML elements the point is on as a path."
   (and (eq major-mode 'nxml-mode)
-	   (let (path-to-id path-rest)
-		 (save-excursion
-		   (save-restriction
-			 (widen)
-			 (while (and (not (bobp))
-						 (condition-case nil (progn (nxml-backward-up-element) t) (error nil)))
-			   (multiple-value-bind 
-				   (has-id step)
-				   (loop with has-id = nil
-                         with step = (xmltok-start-tag-local-name)
-					     for att in xmltok-attributes
-						 if (string= (xmltok-attribute-local-name att) "id")
-						 return (values t (concat "\"" (xmltok-attribute-value att) "\""))
-						 else if (string= (xmltok-attribute-local-name att) "name")
-						 do (setq has-id t step (concat "\"" (xmltok-attribute-value att) "\""))
-						 finally return (values has-id step ))
-				 (if (or path-to-id has-id)
-					 (setq path-to-id (cons step path-to-id))
-				   (setq path-rest (cons step path-rest)))))))
-		 (let ((path-to-id-len (length path-to-id))
-			   (path-rest-len (length path-rest)))
-		   (if (> path-to-id-len nxml-where-elements-to-id)
-			   (progn
-				 (setq path-to-id (nthcdr (- path-to-id-len nxml-where-elements-to-id -1) path-to-id))
-				 (setq path-to-id (cons "..." path-to-id))
-				 (setq path-to-id-len nxml-where-elements-to-id))
-			 (setq path-to-id (cons "" path-to-id)))
-		   (when (> (+ path-to-id-len path-rest-len) nxml-where-max-elements)
-			 (setq path-rest (nbutlast path-rest (- path-rest-len (- nxml-where-max-elements path-to-id-len) -1)))
-			 (setq path-rest (nconc path-rest (list "...")))))
-		 (mapconcat 'identity (nconc path-to-id path-rest) "/"))))
-  
+           (let (path-to-id path-rest)
+                 (save-excursion
+                   (save-restriction
+                         (widen)
+                         (while (and (not (bobp))
+                                     (condition-case nil (progn (nxml-backward-up-element) t)
+                                       (error nil)))
+                           (multiple-value-bind
+                               (has-id step)
+                               (loop with has-id = nil
+                                         with step = (xmltok-start-tag-local-name)
+                                         for att in xmltok-attributes
+                                         if (string= (xmltok-attribute-local-name att) "id")
+                                         return (values t (concat "\""
+                                                                  (xmltok-attribute-value att)
+                                                                  "\""))
+                                         else if (string= (xmltok-attribute-local-name att) "name")
+                                         do (setq has-id t
+                                                  step (concat "\""
+                                                               (xmltok-attribute-value att)
+                                                               "\""))
+                                         finally return (values has-id step ))
+                             (if (or path-to-id has-id)
+                                 (setq path-to-id (cons step path-to-id))
+                               (setq path-rest (cons step path-rest)))))))
+                 (let ((path-to-id-len (length path-to-id))
+                           (path-rest-len (length path-rest)))
+                   (if (> path-to-id-len nxml-where-elements-to-id)
+                           (progn
+                                 (setq path-to-id (nthcdr (- path-to-id-len
+                                                             nxml-where-elements-to-id
+                                                             -1) path-to-id))
+                                 (setq path-to-id (cons "..." path-to-id))
+                                 (setq path-to-id-len nxml-where-elements-to-id))
+                         (setq path-to-id (cons "" path-to-id)))
+                   (when (> (+ path-to-id-len path-rest-len) nxml-where-max-elements)
+                         (setq path-rest (nbutlast path-rest (- path-rest-len
+                                                                (- nxml-where-max-elements
+                                                                   path-to-id-len)
+                                                                -1)))
+                         (setq path-rest (nconc path-rest (list "...")))))
+                 (mapconcat 'identity (nconc path-to-id path-rest) "/"))))
+
 (require 'which-func)
 (which-func-mode)
 
@@ -60,8 +71,8 @@
 
 (require 'hideshow)
 
-(add-to-list 'hs-special-modes-alist '(nxml-mode ("\\(<[^/>]*>\\)$" 1)
-												 "</[^/>]*>$"))
+(add-to-list 'hs-special-modes-alist '(nxml-mode ("\\(<[^/>]*>\\)$" 1) "</[^/>]*>$"))
+
 (defun nxml-enable-hs ()
   (setq nxml-sexp-element-flag t)
   (hs-minor-mode 1))
@@ -71,10 +82,10 @@
 (defun hs-nxml-enter ()
   (interactive)
   (when (hs-already-hidden-p)
-	(hs-show-block)
-	(hs-hide-level 1)
-	(nxml-forward-element)
-	(nxml-backward-element)))
+        (hs-show-block)
+        (hs-hide-level 1)
+        (nxml-forward-element)
+        (nxml-backward-element)))
 
 (defun hs-nxml-leave ()
   (interactive)
@@ -123,7 +134,8 @@
 (define-key nxml-mode-map (kbd "\C-c\C-c") 'recompile)
 
 (defconst nxml-docbook-common-elements
-  '(("section" . ("para" "itemizedlist" "variablelist" "section" "bridgehead" "task" "procedure" "title"))
+  '(("section" . ("para" "itemizedlist" "variablelist" "section" "bridgehead" "task" "procedure"
+                  "title"))
     ("para" . ("emphasis" "code" "replaceable"))
     ("emphasis" . ("code"))
     ("itemizedlist" . ("listitem"))
@@ -156,9 +168,9 @@
                       (save-excursion
                         (nxml-backward-up-element)
                         (let ((tag (xmltok-start-tag-qname)))
-                          (list (save-excursion 
-                                  (skip-chars-forward "^>") 
-                                  (forward-char 1) 
+                          (list (save-excursion
+                                  (skip-chars-forward "^>")
+                                  (forward-char 1)
                                   (point))
                                 (progn
                                   (nxml-forward-balanced-item)
@@ -172,8 +184,10 @@
   (let ((start (set-marker (make-marker) (or start (point))))
         (end (set-marker (make-marker) (or end (point)))))
     (when kill-tag
-      (delete-region (save-excursion (goto-char start) (skip-chars-backward "^<") (1- (point))) start)
-      (delete-region end (save-excursion (goto-char end) (skip-chars-forward "^>") (1+ (point)))))
+      (delete-region (save-excursion
+                       (goto-char start) (skip-chars-backward "^<") (1- (point))) start)
+      (delete-region end (save-excursion
+                           (goto-char end) (skip-chars-forward "^>") (1+ (point)))))
     (save-excursion
       (goto-char start)
       (let* ((token-end (nxml-token-before))
@@ -193,9 +207,9 @@
              (context (xmltok-start-tag-qname))
              (common-elements (cdr (assoc context nxml-docbook-common-elements)))
              (valid-elements (or valid
-                                 (let ((lt-pos (point))) 
-                                   (rng-set-state-after lt-pos) 
-                                   (loop for (ns . name) in (rng-match-possible-start-tag-names) 
+                                 (let ((lt-pos (point)))
+                                   (rng-set-state-after lt-pos)
+                                   (loop for (ns . name) in (rng-match-possible-start-tag-names)
                                          if (not (member name elements)) collect name into elements
                                          finally return elements))))
              (elements (loop for element in common-elements

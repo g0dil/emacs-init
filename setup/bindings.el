@@ -3,6 +3,7 @@
 (global-set-key "\C-c'h" 'highlight-changes-mode)
 (global-set-key "\C-c'f" 'auto-fill-mode)
 (global-set-key "\C-c'v" 'visual-line-mode)
+(global-set-key "\C-c't" 'toggle-truncate-lines)
 (global-set-key "\C-c'd" 'toggle-debug-on-error)
 (global-set-key "\C-c'g" 'toggle-debug-on-quit)
 (global-set-key "\C-c'c" 'toggle-case-fold-search)

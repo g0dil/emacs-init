@@ -54,10 +54,17 @@ window smaller than MIN-HEIGHT lines."
         (shrink-window (- (window-height) min-height))
       (shrink-window n))))
 
+(defconst setup-my-windows-precious-buffers
+  '("*eshell*"))
+(defconst setup-my-windows-junk-buffers
+  '("*scratch*" "*Messages*" "*Calculator" "*Calc Trail*" "*compilation*" "*fetchmail*"))
+
 (defun setup-my-windows ()
   (interactive)
   (let ((width 100) (min 100) (distribute t)
-        (currentwindow (selected-window)) topwindows  newwindow newtopwindows)
+        (currentbuffer (current-buffer))
+        (currentwindow (selected-window))
+        topwindows firstwindow newwindow newtopwindows)
     (walk-windows (function (lambda (w)
                               (let ((e (window-edges w)))
                                 (if (< (nth 1 e) window-min-height)
@@ -70,29 +77,69 @@ window smaller than MIN-HEIGHT lines."
                                                            topwindows))))))
                             'nomini)
     (setq topwindows (sort topwindows (function (lambda (a b) (< (car a) (car b))))))
+    (setq topwindows (loop for w in topwindows
+                           for (pos win buf point start iscurrent) = w
+                           if (not (member (buffer-name buf) setup-my-windows-junk-buffers))
+                           collect w))
     (delete-other-windows (nth 1 (car topwindows)))
-    (setq topwindows (cdr topwindows))
     (save-selected-window
       (select-window (split-window-vertically
                       (- (window-height) (max 5 (/ (* (frame-height) 15) 100)) -1)))
-      (switch-to-buffer (get-buffer-create "*compilation*")))
-    (setq newwindow (selected-window))
+      (switch-to-buffer (get-buffer-create "*compilation*"))
+      (if (eq currentbuffer (current-buffer))
+          (setq newwindow (selected-window))))
+    (setq firstwindow (selected-window))
     (setq newtopwindows (list (selected-window)))
     (while (> (window-width) (+ width 3 min 3))
       (select-window (split-window-horizontally (+ width 3)))
       (setq newtopwindows (cons (selected-window) newtopwindows))
-      (if topwindows
-          (progn
-            (switch-to-buffer (nth 2 (car topwindows)))
-            (set-window-start (selected-window) (nth 4 (car topwindows)))
-            (goto-char (nth 3 (car topwindows)))
-            (if (nth 5 (car topwindows))
-                (setq newwindow (selected-window)))
-            (setq topwindows (cdr topwindows)))
-        (switch-to-buffer (get-buffer-create "*scratch*"))))
-    (select-window newwindow)
+      (switch-to-buffer (get-buffer-create "*scratch*")))
+    (setq newtopwindows (reverse newtopwindows))
+    (loop for w in newtopwindows
+          for (pos win buf point start iscurrent) in
+              (loop for w in topwindows
+                    for (pos win buf point start iscurrent) = w
+                    if (not (member (buffer-name buf) setup-my-windows-precious-buffers))
+                    collect w)
+          do (progn
+               (select-window w)
+               (set-window-buffer w buf)
+               (set-window-start w start)
+               (goto-char point)
+               (if iscurrent
+                   (setq newwindow w))))
+    (setq newtopwindows (reverse newtopwindows))
+    (setq topwindows (reverse topwindows))
+    (loop for w in newtopwindows
+          for (pos win buf point start iscurrent) in
+              (loop for w in topwindows
+                    for (pos win buf point start iscurrent) = w
+                    if (member (buffer-name buf) setup-my-windows-precious-buffers)
+                    collect w)
+          do (progn
+               (select-window w)
+               (set-window-buffer w buf)
+               (set-window-start w start)
+               (goto-char point)
+               (if iscurrent
+                   (setq newwindow w))))
+    (setq newwindow
+          (or newwindow
+              (loop for w in newtopwindows
+                    if (eq (window-buffer w) currentbuffer) return w)
+              (loop for w in newtopwindows
+                    for name = (buffer-name (window-buffer w))
+                    if (string= name "*scratch*") return w)
+              (loop for w in newtopwindows
+                    for name = (buffer-name (window-buffer w))
+                    if (and (= (aref name 0) ?*)
+                            (not (member name setup-my-windows-precious-buffers))) return w)
+              firstwindow))
     (if (and distribute (> (length newtopwindows) 1))
-        (balance-windows newwindow))))
+        (balance-windows firstwindow))
+    (select-window newwindow)
+    (if (not (member (buffer-name currentbuffer) setup-my-windows-junk-buffers))
+        (switch-to-buffer currentbuffer))))
 
 (defun my-split-window-sensibly (window)
   (if (and (> (window-height window) (- (frame-height (window-frame window)) window-min-height))
@@ -107,8 +154,52 @@ window smaller than MIN-HEIGHT lines."
 (global-set-key "\C-xp" 'other-window-reverse)
 (global-set-key "\C-\M-_" (lambda () (interactive) (safe-shrink-window 5)))
 
+(defun my-swap-window-to-right (&optional stay)
+  (interactive "P")
+  (let ((cb (current-buffer))
+        (cw (selected-window)))
+    (windmove-right)
+    (set-window-buffer cw (current-buffer))
+    (switch-to-buffer cb)
+    (if stay
+        (select-window cw))))
+
+(defun my-swap-window-to-left (&optional stay)
+  (interactive "P")
+  (let ((cb (current-buffer))
+        (cw (selected-window)))
+    (windmove-left)
+    (set-window-buffer cw (current-buffer))
+    (switch-to-buffer cb)
+    (if stay
+        (select-window cw))))
+
+(global-set-key "\C-x>" 'my-swap-window-to-right)
+(global-set-key "\C-x<" 'my-swap-window-to-left)
+
 (defun maximize-window-15 ()
   (interactive)
   (maximize-window (max 5 (/ (* (frame-height) 15) 100))))
 
 (global-set-key [(ctrl meta ?+)]  'maximize-window-15)
+
+(defun safe-max-window-horizontally ()
+  (interactive)
+  (let ((found nil)
+        (width 0)
+        (count 0)
+        (current (selected-window)))
+    (walk-windows (function (lambda (w)
+                              (let ((e (window-edges w)))
+                                (if (< (nth 1 e) window-min-height)
+                                    (progn
+                                      (setq width (+ width (window-width w))
+                                            count (1+ count))
+                                      (if (equal w current)
+                                          (setq found t)))))))
+                  'nomini)
+    (if (not found)
+        (error "Current window is not a top window"))
+    (shrink-window-horizontally (- (- width (window-width) (* window-min-width (1- count)))))))
+
+(global-set-key "\C-x=" 'safe-max-window-horizontally)

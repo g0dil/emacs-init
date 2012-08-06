@@ -1,17 +1,10 @@
-(autoload 'python-mode "python-mode" "Python Mode." t)
-(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
-(add-to-list 'interpreter-mode-alist '("python" . python-mode))
-(require 'python-mode)
-(add-hook 'python-mode-hook
-      (lambda ()
-        (set-variable 'py-indent-offset 4)
-        ;(set-variable 'py-smart-indentation nil)
-        (set-variable 'indent-tabs-mode nil)
-        (define-key py-mode-map (kbd "RET") 'newline-and-indent)
-        ;(define-key py-mode-map [tab] 'yas/expand)
-        ;(setq yas/after-exit-snippet-hook 'indent-according-to-mode)
-        ;(smart-operator-mode-on)
-        ))
+;(autoload 'python-mode "python-mode" "Python Mode." t)
+;(add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+;(add-to-list 'interpreter-mode-alist '("python" . python-mode))
+;(require 'python-mode)
+;(provide 'python)
+;(provide 'python21)
+
 ;; pymacs
 (autoload 'pymacs-apply "pymacs")
 (autoload 'pymacs-call "pymacs")
@@ -30,6 +23,193 @@
 ;; M-?               rope-lucky-assist
 
 (define-key ropemacs-local-keymap "\M-/" 'hippie-expand)
+
+(defun write-file-py-cleanup-imports ()
+  (save-excursion
+    (condition-case nil
+        (py-cleanup-imports t)
+      (error . nil)))
+  nil)
+
+(defun python-init-auto-cleanup-imports-on-save ()
+  (add-hook 'write-file-functions 'write-file-py-cleanup-imports nil t))
+
+(defun my-flymake-error-at-point ()
+  (condition-case nil
+      (flymake-ler-text (car (nth 0 (flymake-find-err-info flymake-err-info
+                                                           (flymake-current-line-no)))))
+    (error (error "no flymake error at point"))))
+
+(defun my-flymake-show-error ()
+  (interactive)
+  (message (my-flymake-error-at-point)))
+
+(defun my-pyflymake-add-import-from-error ()
+  (interactive)
+  (let ((err (my-flymake-error-at-point)))
+    (if (string-match "undefined name '\\(.*\\)'" err)
+        (py-add-import (match-string 1 err))
+      (error "no missing symbol at point"))))
+
+(defun py-add-import (import)
+  (interactive "sModule to import: ")
+  (save-window-excursion
+    (save-excursion
+      (goto-char (car (py-imports-region)))
+      (insert "import " import "\n")
+      (py-cleanup-imports t)
+      (sit-for 2))))
+
+(defun my-flymake-check-and-wait ()
+  (if (boundp flymake-is-running)
+      (progn
+        (while flymake-is-running (sit-for .1))
+        (flymake-start-syntax-check)
+        (while flymake-is-running (sit-for .1)))))
+
+(defun my-flymake-goto-next-error ()
+  (interactive)
+  (my-flymake-check-and-wait)
+  (flymake-goto-next-error)
+  (my-flymake-show-error))
+
+(defun py-find-file (errormark filename defaultdir)
+  (let ((fullname (expand-file-name filename defaultdir)))
+    (or (and (not (file-exists-p fullname))
+             (let* ((name (loop for name = fullname then (directory-file-name
+                                                          (file-name-directory name))
+                                if (file-exists-p name) return name))
+                    (fmt (and name (with-temp-buffer
+                                     (insert-file-contents name nil 0 1024 t) (archive-find-type))))
+                    (tail (and fmt (substring fullname (1+ (length name))))))
+               (if fmt
+                   (with-current-buffer (find-file-noselect name)
+                     (goto-char (point-min))
+                     (re-search-forward (concat " " (regexp-quote tail) "$"))
+                     (save-window-excursion
+                       (archive-extract)
+                       (current-buffer))))))
+        (compilation-find-file errormark filename defaultdir))))
+
+(require 'arc-mode)
+
+(defun py-eshell-goto-error (&optional back)
+  (interactive "P")
+  (display-buffer "*eshell*" t)
+  (let (here end start dir file line errmk example)
+    (with-current-buffer "*eshell*"
+      (save-excursion
+        ;; Find and validate last traceback
+        (goto-char (point-max))
+        (re-search-backward "^\\(.*\\)Traceback \\|^Failed example:")
+        (beginning-of-line)
+        (if (looking-at "Failed example:")
+            (progn
+              (forward-line -2)
+              (setq example t)))
+        (if (or (not (and (boundp 'py-eshell-last-error)
+                          (boundp 'py-eshell-last-point)))
+                (null py-eshell-last-error)
+                (null py-eshell-last-point)
+                (null py-eshell-last-dir)
+                (not (= py-eshell-last-error (point))))
+            (progn
+              (set (make-local-variable 'py-eshell-last-error) (point))
+              (set (make-local-variable 'py-eshell-prefix) (or (match-string 1) ""))
+              (if example
+                  (forward-line 2)
+                (while (and (< (forward-line 1) 1) (looking-at (concat py-eshell-prefix "  ")))))
+              (set (make-local-variable 'py-eshell-last-point) (point))
+              (set (make-local-variable 'py-eshell-last-dir) default-directory)
+              (while
+                  (and (< (forward-line 1) 1)
+                       (not (if (looking-at ".*Leaving directory ")
+                                (progn
+                                  (goto-char (match-end 0))
+                                  (skip-chars-forward "'\"`")
+                                  (let ((dir (current-word)))
+                                    (and dir (setq py-eshell-last-dir
+                                                   (file-name-as-directory dir)))))))))))
+        (goto-char py-eshell-last-point)
+
+        ;; Nove to next / prev frame in traceback
+        (if back
+            (progn
+              (while (and (looking-at (concat py-eshell-prefix "  "))
+                          (< (forward-line 1) 1)
+                          (not (looking-at (concat py-eshell-prefix "  File ")))))
+              (setq start (point))
+              (while (and (looking-at (concat py-eshell-prefix "  "))
+                          (< (forward-line 1) 1)
+                          (not (looking-at (concat py-eshell-prefix "  File ")))))
+              (setq end (point)))
+          (while (and (> (forward-line -1) -1)
+                      (not (looking-at (concat py-eshell-prefix (if example "File " "  File "))))
+                      (> (point) py-eshell-last-error)))
+          (setq end py-eshell-last-point start (point)))
+
+        ;; Parse information and set overlay
+        (if (save-excursion (goto-char start) (setq errmk (point-marker))
+                            (looking-at (concat py-eshell-prefix (if example "File " "  File "))))
+            (let ((default-directory py-eshell-last-dir))
+              (set (make-local-variable 'py-eshell-last-point) start)
+              (if (and (boundp 'py-eshell-overlay) py-eshell-overlay)
+                  (move-overlay py-eshell-overlay start end)
+                (set (make-local-variable 'py-eshell-overlay) (make-overlay start end))
+                (overlay-put py-eshell-overlay 'face 'highlight))
+              (save-excursion
+                (goto-char start)
+                (forward-char (+ (length py-eshell-prefix) 7))
+                (skip-chars-forward "\"")
+                (setq file (current-word))
+                (search-forward " line ")
+                (skip-chars-forward " ")
+                (setq line (string-to-number
+                            (buffer-substring-no-properties
+                             (point) (progn (skip-chars-forward "0-9") (point)))))
+                (setq dir default-directory))
+              (if (null file)
+                  (error "File not found")))
+          (py-eshell-error-reset)
+          (error "No further traceback line"))))
+
+    ;; move to error locus
+    (if (and file line errmk)
+        (with-current-buffer (py-find-file errmk file dir)
+          (compilation-goto-locus errmk (save-excursion (goto-line line) (point-marker)) nil)))))
+
+(defun py-eshell-error-reset ()
+  (interactive)
+  (save-excursion
+    (set-buffer "*eshell*")
+    (if (and (boundp 'py-eshell-overlay) py-eshell-overlay)
+        (delete-overlay py-eshell-overlay))
+    (set (make-local-variable 'py-eshell-last-error) nil)
+    (set (make-local-variable 'py-eshell-last-point) nil)
+    (set (make-local-variable 'py-eshell-last-dir) nil)
+    (set (make-local-variable 'py-eshell-prefix) nil)
+    (set (make-local-variable 'py-eshell-overlay) nil)))
+
+(global-set-key "\C-xP" 'py-eshell-goto-error)
+(global-set-key "\C-x\C-p" 'python-shell)
+
+(add-hook 'python-mode-hook 'python-init-auto-cleanup-imports-on-save)
+
+(defun py-setup-hook ()
+  ;(set-variable 'py-indent-offset 4)
+  ;(set-variable 'py-smart-indentation nil)
+  (set-variable 'indent-tabs-mode nil)
+  ;(define-key py-mode-map (kbd "RET") 'newline-and-indent)
+  ;(define-key py-mode-map [tab] 'yas/expand)
+  ;(setq yas/after-exit-snippet-hook 'indent-according-to-mode)
+  ;(smart-operator-mode-on)
+  (define-key python-mode-map "\C-ci" 'my-pyflymake-add-import-from-error)
+  (define-key python-mode-map "\C-ce" 'my-flymake-show-error)
+  (define-key python-mode-map "\C-cn" 'my-flymake-goto-next-error)
+  (define-key python-mode-map "\C-cI" 'py-cleanup-imports)
+)
+
+(add-hook 'python-mode-hook 'py-setup-hook)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Auto-completion
@@ -116,23 +296,29 @@
                '("\\.py\\'" flymake-pyflakes-init)))
 (add-hook 'find-file-hook 'flymake-find-file-hook)
 
+(defun py-imports-region ()
+  (save-excursion
+    (goto-char (point-min))
+    (while (and (re-search-forward "^\\(import\\s-+\\|from\\s-+\\)" nil t)
+                (looking-at "__future__")))
+    (beginning-of-line)
+    (setq beg (point))
+    (if (not (looking-at "\\(import\\s-+\\|from\\s-+\\)"))
+        (cons beg beg)
+      (while (looking-at "\\(import\\s-+\\|from\\s-+\\)")
+        (forward-line 1))
+      (cons beg (point)))))
+
 (defun py-cleanup-imports (&optional nowait)
   (interactive)
   (let (beg end)
     (if (region-active-p)
         (setq beg (region-beginning)
               end (region-end))
-      (save-excursion
-        (goto-char (point-min))
-        (while (and (re-search-forward "^\\(import\\s-+\\|from\\s-+\\)" nil t)
-                    (looking-at "__future__")))
-        (beginning-of-line)
-        (if (not (looking-at "\\(import\\s-+\\|from\\s-+\\)"))
-            (error "No imports found"))
-        (setq beg (point))
-        (while (looking-at "\\(import\\s-+\\|from\\s-+\\)")
-          (forward-line 1))
-        (setq end (point))))
+      (setq reg (py-imports-region))
+      (if (= (car reg) (cdr reg))
+          (error "No imports found"))
+      (setq beg (car reg) end (cdr reg)))
     (sort-lines t beg end)
     (goto-char beg)
     (let ((end-marker (make-marker))
@@ -161,9 +347,7 @@
       (sort-lines nil b (point))
       (if (and (not nowait) (boundp flymake-is-running))
           (progn
-            (while flymake-is-running (sit-for .1))
-            (flymake-start-syntax-check)
-            (while flymake-is-running (sit-for .1))
+            (my-flymake-check-and-wait)
             (goto-char beg)
             (while (< (point) end-marker)
               (if (and (loop for ov in (overlays-at (point))

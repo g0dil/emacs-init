@@ -46,7 +46,12 @@
   (let ((default-directory (magit-get-top-dir default-directory)))
     (if (not default-directory)
         (error "not a Git directory"))
-    (grep (format "git ls-files -z | xargs -r0 grep -nH -E %s | cat -" (shell-quote-argument regexp)))))
+    (grep (format "git ls-files -z | xargs -r0 grep -nH -E %s | cat -"
+                  (shell-quote-argument regexp)))))
+
+(setenv "GIT_PAGER" "cat")
+(setenv "GIT_MAN_VIEWER" "woman")
+(setenv "GIT_EDITOR" "emacsclient")
 
 (defun find-file-maybe-git (&optional nogit)
   (interactive "P")
@@ -57,13 +62,19 @@
 (global-set-key "\C-x\C-f" 'find-file-maybe-git)
 (global-set-key "\C-cGG" 'grep-in-git-repo)
 
-(defun git-files-find-symbol (&optional arg)
-  (interactive "P")
-  (let ((symbol (current-word))
-        (dir (magit-get-top-dir default-directory)))
+(defun git-files-find-symbol (symbol)
+  (interactive (list (read-string "Symbol: " (current-word))))
+  (let ((dir (magit-get-top-dir default-directory)))
     (if (not dir) (error "No git repository"))
-    (if arg (setq symbol (read-string "Symbol: " nil nil symbol)))
     (let ((default-directory dir))
       (grep (format "git ls-files -z | xargs -r0 grep -nwHF %s | cat -" symbol)))))
 
 (global-set-key "\C-cGF" 'git-files-find-symbol)
+
+(defun dired-git-files ()
+  (interactive)
+  (let ((default-directory (magit-get-top-dir default-directory))
+        (ls-lisp-use-insert-directory-program t))
+    (dired (cons default-directory (split-string (shell-command-to-string "git ls-files") "\n")))))
+
+(global-set-key "\C-cGD" 'dired-git-files)
