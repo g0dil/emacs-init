@@ -2,6 +2,7 @@
 (defvar nxml-where-max-elements 6)
 
 (require 'cl)
+(require 'nxml-mode)
 
 (defun nxml-where ()
   "Display the hierarchy of XML elements the point is on as a path."
@@ -136,13 +137,13 @@
 (defconst nxml-docbook-common-elements
   '(("section" . ("para" "itemizedlist" "variablelist" "section" "bridgehead" "task" "procedure"
                   "title"))
-    ("para" . ("emphasis" "code" "replaceable"))
+    ("para" . ("emphasis" "code" "replaceable" "literal"))
     ("emphasis" . ("code"))
     ("itemizedlist" . ("listitem"))
     ("orderedlist" . ("listitem"))
     ("variablelist" . ("varlistentry"))
     ("varlistentry" . ("term" "listitem"))
-    ("term" . ("emphasis" "code" "replaceable"))
+    ("term" . ("emphasis" "literal" "replaceable" "option"))
     ("listitem" . ("para" "itemizedlist"))
     ("task" . ("tasksummary" "procedure" "title"))
     ("tasksummary" . ("para" "itemizedlist" "variablelist"))
@@ -286,6 +287,15 @@
     (newline-and-indent)
     (insert "<" element ">")
     (fill-paragraph)))
+
+(defun my-nxml-reformat-region (begin end)
+  (interactive "r")
+  (save-excursion
+      (nxml-mode)
+      (goto-char begin)
+      (while (search-forward-regexp "\>[ \\t]*\<" nil t)
+        (backward-char) (insert "\n"))
+      (indent-region begin end nil)))
 
 (define-key nxml-mode-map (kbd "M-o") 'nxml-open-line)
 (define-key nxml-mode-map (kbd "S-<return>") 'nxml-split-element)

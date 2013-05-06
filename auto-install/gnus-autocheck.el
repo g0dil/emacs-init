@@ -163,7 +163,7 @@ checking for news"
                                               (gnus-autocheck-start 0)))
 (define-key gnus-group-mode-map (kbd "ve") 'gnus-autocheck-stop)
 
-(gnus-autocheck-start)
+(add-hook 'gnus-startup-hook 'gnus-autocheck-start)
 (add-hook 'gnus-exit-gnus-hook 'gnus-autocheck-stop)
 
 (provide 'gnus-autocheck)
