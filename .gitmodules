@@ -1,0 +1,11 @@
+[submodule "emacs-egrep"]
+path = emacs-egrep
+url = git://g0dil.de/emacs-egrep.git
+
+[submodule "magit"]
+path = magit
+url = https://github.com/philjackson/magit.git
+
+[submodule "emacsstuff"]
+path = emacsstuff
+url = git://g0dil.de/emacsstuff.git
