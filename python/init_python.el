@@ -4,6 +4,7 @@
 ;(require 'python-mode)
 ;(provide 'python)
 ;(provide 'python21)
+(require 'python)
 
 ;; pymacs
 (autoload 'pymacs-apply "pymacs")
