@@ -35,7 +35,8 @@ subdirectories."
                        (read-directory-name
                         (concat (if recurse "Recursively l" "L")
                                 "oad all Emacs lisp files from directory: ")
-                        default-directory default-directory t)))))
+                        default-directory default-directory t))))
+        errors)
    ;; For non-interactive use
    (when (not (called-interactively-p 'any))
      (unless directory
@@ -66,9 +67,19 @@ subdirectories."
                     (member
                      (concat (file-name-sans-extension file) ".elc")
                      file-list))))
-         (load file))
+         (condition-case err
+             (load file)
+           (error 
+            (message "error while loading %s: %s" file err)
+            (setq errors (cons (file-name-nondirectory file) errors)))))
         ((and (file-directory-p file)
               recurse)
-         (load-dir file t)))))))
+         (setq errors (nconc (load-dir file t) errors))))))
+   (if errors
+       (progn
+         (setq inhibit-startup-screen t)
+         (display-buffer "*Messages*")
+         (message "Errors occured while loading: %s" (mapconcat 'identity errors " "))))
+   errors))
 
 (provide 'load-dir)
