@@ -4,7 +4,7 @@
                                    (or load-file-name
                                        (when (boundp 'bytecomp-filename) bytecomp-filename)
                                        buffer-file-name))))
-                                "emacs-egrep"))
+                                "magit"))
 (require 'magit)
 (require 'cl)
 
