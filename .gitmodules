@@ -4,7 +4,7 @@ url = git://g0dil.de/emacs-egrep.git
 
 [submodule "magit"]
 path = magit
-url = https://github.com/philjackson/magit.git
+url = git://github.com/magit/magit.git
 
 [submodule "emacsstuff"]
 path = emacsstuff
