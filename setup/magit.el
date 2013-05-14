@@ -84,3 +84,15 @@
     (dired (cons default-directory (split-string (shell-command-to-string "git ls-files") "\n")))))
 
 (global-set-key "\C-cGD" 'dired-git-files)
+
+(defun magit-svn-fetch ()
+  (interactive)
+  (magit-run-git-async "svn" "fetch"))
+
+(define-key magit-mode-map "Nf" 'magit-svn-fetch)
+
+(defun magit-quit-window (&optional kill-buffer)
+  (interactive "P")
+  (quit-window kill-buffer))
+
+(setq magit-diff-options '("-w"))

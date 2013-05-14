@@ -154,25 +154,30 @@ window smaller than MIN-HEIGHT lines."
 (global-set-key "\C-xp" 'other-window-reverse)
 (global-set-key "\C-\M-_" (lambda () (interactive) (safe-shrink-window 5)))
 
-(defun my-swap-window-to-right (&optional stay)
+(defun my-swap-window-to-right (&optional below)
+  "If swap buffer in this window with buffer on the right. If BELOW is set,
+instead move current buffer to right and replace it with the next buffer from
+the buffer stack in the current window."
   (interactive "P")
   (let ((cb (current-buffer))
         (cw (selected-window)))
+    (if below
+        (switch-to-buffer nil))
     (windmove-right)
-    (set-window-buffer cw (current-buffer))
-    (switch-to-buffer cb)
-    (if stay
-        (select-window cw))))
+    (if (not below)
+        (set-window-buffer cw (current-buffer)))
+    (switch-to-buffer cb)))
 
-(defun my-swap-window-to-left (&optional stay)
+(defun my-swap-window-to-left (&optional below)
   (interactive "P")
   (let ((cb (current-buffer))
         (cw (selected-window)))
+    (if below
+        (switch-to-buffer nil))
     (windmove-left)
-    (set-window-buffer cw (current-buffer))
-    (switch-to-buffer cb)
-    (if stay
-        (select-window cw))))
+    (if (not below)
+        (set-window-buffer cw (current-buffer)))
+    (switch-to-buffer cb)))
 
 (global-set-key "\C-x>" 'my-swap-window-to-right)
 (global-set-key "\C-x<" 'my-swap-window-to-left)
