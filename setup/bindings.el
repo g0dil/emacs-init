@@ -9,4 +9,14 @@
 (global-set-key "\C-c'c" 'toggle-case-fold-search)
 (global-set-key "\C-c's" 'flyspell-mode)
 (global-set-key "\C-c'a" 'global-auto-revert-mode)
-(global-set-key "\C-c' " 'whitespace-mode)
+
+(defun toggle-whitespace-modes ()
+  (interactive)
+  (if whitespace-mode
+      (progn
+        (whitespace-mode 0)
+        (develock-mode 0))
+    (whitespace-mode 1)
+    (develock-mode 1)))
+
+(global-set-key "\C-c' " 'toggle-whitespace-modes)

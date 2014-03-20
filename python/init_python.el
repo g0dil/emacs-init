@@ -74,6 +74,12 @@
   (flymake-goto-next-error)
   (my-flymake-show-error))
 
+(defun my-flymake-goto-prev-error ()
+  (interactive)
+  (my-flymake-check-and-wait)
+  (flymake-goto-prev-error)
+  (my-flymake-show-error))
+
 (defun py-find-file (errormark filename defaultdir)
   (let ((fullname (expand-file-name filename defaultdir)))
     (or (and (not (file-exists-p fullname))
@@ -117,6 +123,8 @@
             (progn
               (set (make-local-variable 'py-eshell-last-error) (point))
               (set (make-local-variable 'py-eshell-prefix) (or (match-string 1) ""))
+              (if (string-match "Original $" py-eshell-prefix)
+                  (setq py-eshell-prefix (substring py-eshell-prefix 0 (match-beginning 0))))
               (if example
                   (forward-line 2)
                 (while (and (< (forward-line 1) 1) (looking-at (concat py-eshell-prefix "  ")))))
@@ -207,6 +215,7 @@
   (define-key python-mode-map "\C-ci" 'my-pyflymake-add-import-from-error)
   (define-key python-mode-map "\C-ce" 'my-flymake-show-error)
   (define-key python-mode-map "\C-cn" 'my-flymake-goto-next-error)
+  (define-key python-mode-map "\C-cp" 'my-flymake-goto-prev-error)
   (define-key python-mode-map "\C-cI" 'py-cleanup-imports)
 )
 
@@ -292,6 +301,7 @@
            (local-file (file-relative-name
                         temp-file
                         (file-name-directory buffer-file-name))))
+      (message "flymake init pyflakes %s" local-file)
       (list "pyflakes" (list local-file))))
   (add-to-list 'flymake-allowed-file-name-masks
                '("\\.py\\'" flymake-pyflakes-init)))

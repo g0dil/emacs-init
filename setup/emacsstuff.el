@@ -9,3 +9,6 @@
 (require 'g0dilstuff-init)
 (require 'cc-ide)
 (require 'softtext)
+
+(define-key c++-mode-map "\C-c\C-c" 'recompile)
+(define-key c++-mode-map "\C-c\C-i" 'comment-indent)

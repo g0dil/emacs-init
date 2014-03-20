@@ -137,6 +137,8 @@
 (defconst nxml-docbook-common-elements
   '(("section" . ("para" "itemizedlist" "variablelist" "section" "bridgehead" "task" "procedure"
                   "title"))
+    ("refsect1" . ("title" "para" "itemizedlist" "variablelist" "screen" "refsect2"))
+    ("refsect2" . ("title" "para" "itemizedlilst" "variablelist" "screen"))
     ("para" . ("emphasis" "code" "replaceable" "literal"))
     ("emphasis" . ("code"))
     ("itemizedlist" . ("listitem"))

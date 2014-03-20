@@ -5,8 +5,36 @@
                                        (when (boundp 'bytecomp-filename) bytecomp-filename)
                                        buffer-file-name))))
                                 "magit"))
-(require 'magit)
+
+(add-to-list 'load-path (concat (file-name-directory
+                                 (directory-file-name
+                                  (file-name-directory
+                                   (or load-file-name
+                                       (when (boundp 'bytecomp-filename) bytecomp-filename)
+                                       buffer-file-name))))
+                                "git-modes"))
+
+(add-to-list 'load-path (concat (file-name-directory
+                                 (directory-file-name
+                                  (file-name-directory
+                                   (or load-file-name
+                                       (when (boundp 'bytecomp-filename) bytecomp-filename)
+                                       buffer-file-name))))
+                                "auto-install"))
+
 (require 'cl)
+
+(if (not (functionp 'run-hook-wrapped))
+    (defun run-hook-wrapped (hook wrap-function &rest args)
+      (loop for fn in hook
+            thereis (apply 'wrap-function fn args))))
+
+(if (not (functionp 'process-live-p))
+    (defun process-live-p (process)
+      (memq (process-status process)
+            '(run open listen connect stop))))
+
+(require 'magit)
 
 (when (eq system-type 'windows-nt)
 
@@ -34,6 +62,10 @@
 
 ); End Windows-NT
 
+(defadvice magit-mode-quit-window (around my-magit-mode-quit-window activate)
+  (letf (((symbol-function 'selected-window) (lambda ())))
+    ad-do-it))
+
 (global-set-key "\C-cGS" 'magit-status)
 
 (defun find-file-in-git-repo ()
@@ -47,13 +79,13 @@
               (remove-if (lambda (x) (string= "" x))
               (split-string files "\n")))))))
 
-(defun grep-in-git-repo (regexp)
-  (interactive "sGrep files in Git repo regexp: ")
+(defun grep-in-git-repo (regexp &optional words-only)
+  (interactive "sGrep files in Git repo regexp: \np")
   (let ((default-directory (magit-get-top-dir default-directory)))
     (if (not default-directory)
         (error "not a Git directory"))
-    (grep (format "git ls-files -z | xargs -r0 grep -nH -E %s | cat -"
-                  (shell-quote-argument regexp)))))
+    (grep (format "git ls-files -z | xargs -r0 grep -nH -E%s -- %s | cat -"
+                  (if words-only " -w" "") (shell-quote-argument regexp)))))
 
 (setenv "GIT_PAGER" "cat")
 (setenv "GIT_MAN_VIEWER" "woman")
