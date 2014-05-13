@@ -80,7 +80,7 @@
               (split-string files "\n")))))))
 
 (defun grep-in-git-repo (regexp &optional words-only)
-  (interactive "sGrep files in Git repo regexp: \np")
+  (interactive "sGrep files in Git repo regexp: \nP")
   (let ((default-directory (magit-get-top-dir default-directory)))
     (if (not default-directory)
         (error "not a Git directory"))
