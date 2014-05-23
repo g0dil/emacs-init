@@ -10,6 +10,9 @@
 (global-set-key "\C-c's" 'flyspell-mode)
 (global-set-key "\C-c'a" 'global-auto-revert-mode)
 
+(require 'develock)
+(require 'develock-py)
+
 (defun toggle-whitespace-modes ()
   (interactive)
   (if whitespace-mode
