@@ -25,6 +25,8 @@
 
 (define-key ropemacs-local-keymap "\M-/" 'hippie-expand)
 
+(global-unset-key "\C-xpn")
+
 (defun write-file-py-cleanup-imports ()
   (save-excursion
     (condition-case nil

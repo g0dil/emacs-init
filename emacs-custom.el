@@ -1,8 +1,8 @@
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
  '(auto-install-install-confirm nil)
  '(auto-install-replace-confirm nil)
  '(auto-install-save-confirm nil)
@@ -10,6 +10,7 @@
  '(backup-directory-alist (quote (("." . "~/.emacs.d/backups"))))
  '(c-backslash-column 99)
  '(c-basic-offset 4)
+ '(c-offsets-alist (quote ((arglist-intro . +))))
  '(column-number-mode t)
  '(comment-column 60)
  '(comment-fill-column 160)
@@ -22,16 +23,19 @@
  '(dabbrev-abbrev-char-regexp "\\sw")
  '(debug-on-error nil)
  '(default-input-method "latin-1-prefix")
+ '(develock-max-column-plist (quote (emacs-lisp-mode 99 lisp-interaction-mode w change-log-mode t texinfo-mode t c-mode 99 c++-mode 99 java-mode 99 jde-mode 99 html-mode 99 html-helper-mode 99 cperl-mode 99 perl-mode 99 mail-mode t message-mode t cmail-mail-mode t tcl-mode 99 ruby-mode 99)))
  '(diff-mode-hook (quote ((lambda nil (diff-auto-refine-mode 1)))))
  '(diff-switches "-u")
+ '(edit-server-new-frame nil)
  '(fill-column 98)
  '(flyspell-delay 30)
  '(flyspell-delayed-commands nil)
+ '(frame-background-mode (quote light))
  '(global-auto-revert-mode nil)
  '(global-highlight-changes-mode t)
  '(global-subword-mode t)
  '(global-visual-line-mode nil)
- '(global-whitespace-mode nil)
+ '(global-whitespace-mode t)
  '(highlight-changes-colors nil)
  '(highlight-changes-face-list nil)
  '(highlight-changes-global-changes-existing-buffers t)
@@ -45,6 +49,8 @@
  '(ispell-program-name "c:/cygwin/bin/aspell.exe")
  '(line-move-visual nil)
  '(ls-lisp-dirs-first t)
+ '(magit-process-popup-time 1)
+ '(magit-status-buffer-switch-function (quote switch-to-buffer))
  '(nxml-child-indent 4)
  '(nxml-where-global-mode nil)
  '(nxml-where-header nil)
@@ -53,26 +59,33 @@
  '(rng-validate-delay 3)
  '(rng-validate-quick-delay 1.5)
  '(save-place t nil (saveplace))
- '(server-done-hook (quote (delete-frame)))
+ '(scroll-bar-mode nil)
+ '(server-done-hook nil)
+ '(server-kill-new-buffers t)
  '(server-mode t)
  '(server-temp-file-regexp "^/tmp/Re\\|/draft\\|.*/itsalltext/.*$")
- '(server-window (quote switch-to-buffer-other-frame))
+ '(server-window nil)
  '(show-paren-mode t)
- '(tab-width 4)
+ '(tab-width 8)
  '(tags-case-fold-search nil)
  '(tool-bar-mode nil)
  '(uniquify-buffer-name-style (quote forward) nil (uniquify))
  '(visual-line-fringe-indicators (quote (left-curly-arrow right-curly-arrow)))
  '(which-func-modes (quote (nxml-mode emacs-lisp-mode c-mode c++-mode perl-mode cperl-mode python-mode makefile-mode sh-mode fortran-mode f90-mode ada-mode diff-mode)))
- '(which-function-mode nil))
+ '(which-function-mode nil)
+ '(whitespace-action (quote (auto-cleanup warn-if-read-only)))
+ '(whitespace-style (quote (face trailing space-before-tab newline indentation empty space-after-tab)))
+ '(x-select-enable-clipboard t))
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "SystemWindow" :foreground "SystemWindowText" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 90 :width normal :foundry "outline" :family "Courier New"))))
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :stipple nil :background "#ffffff" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
+ '(font-lock-keyword-face ((((class color) (min-colors 8)) (:foreground "Purple"))))
  '(highlight-changes ((t (:background "alice blue"))))
  '(highlight-changes-delete ((t (:background "bisque1"))))
+ '(mode-line ((t (:background "gray" :foreground "black"))))
  '(textile-acronym-face ((t (:foreground "medium blue"))))
  '(textile-blockquote-face ((t (:foreground "midnight blue"))))
  '(textile-code-face ((t (:foreground "firebrick4"))))
