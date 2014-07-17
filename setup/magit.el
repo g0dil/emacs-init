@@ -68,16 +68,28 @@
 
 (global-set-key "\C-cGS" 'magit-status)
 
+(defun my-shell-command-to-string (cmd)
+  (shell-command cmd " *my-shell-command-to-string*")
+  (save-current-buffer
+    (set-buffer " *my-shell-command-to-string*")
+    (prog1
+        (buffer-string)
+      (kill-buffer " *my-shell-command-to-string*"))))
+
+(defun git-repo-files ()
+  (let ((default-directory (magit-get-top-dir default-directory)))
+    (split-string (my-shell-command-to-string "git ls-files") "\n")))
+
 (defun find-file-in-git-repo ()
   (interactive)
-  (let* ((repo (magit-get-top-dir default-directory))
-         (files (shell-command-to-string (format "cd %s && git ls-files" repo))))
+  (let ((repo (magit-get-top-dir default-directory))
+        (files (git-repo-files)))
     (find-file
      (concat repo
              (ido-completing-read
               "Find file in git repo: "
               (remove-if (lambda (x) (string= "" x))
-              (split-string files "\n")))))))
+              files))))))
 
 (defun grep-in-git-repo (regexp &optional words-only)
   (interactive "sGrep files in Git repo regexp: \nP")
@@ -108,12 +120,13 @@
       (grep (format "git ls-files -z | xargs -r0 grep -nwHF %s | cat -" symbol)))))
 
 (global-set-key "\C-cGF" 'git-files-find-symbol)
-
 (defun dired-git-files ()
   (interactive)
   (let ((default-directory (magit-get-top-dir default-directory))
-        (ls-lisp-use-insert-directory-program t))
-    (dired (cons default-directory (split-string (shell-command-to-string "git ls-files") "\n")))))
+        (ls-lisp-use-insert-directory-program t)
+        files)
+    (setq files (shell-command-to-string "git ls-files"))
+    (dired (cons default-directory (split-string files "\n")))))
 
 (global-set-key "\C-cGD" 'dired-git-files)
 
