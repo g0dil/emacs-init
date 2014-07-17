@@ -1,3 +1,5 @@
+(require 'ffap)
+
 (defun my-find-file-at-point-with-line ()
   "Opens the file at point and goes to line-number."
   (interactive)

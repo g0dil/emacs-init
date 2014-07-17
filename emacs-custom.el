@@ -26,13 +26,14 @@
  '(develock-max-column-plist (quote (emacs-lisp-mode 99 lisp-interaction-mode w change-log-mode t texinfo-mode t c-mode 99 c++-mode 99 java-mode 99 jde-mode 99 html-mode 99 html-helper-mode 99 cperl-mode 99 perl-mode 99 mail-mode t message-mode t cmail-mail-mode t tcl-mode 99 ruby-mode 99)))
  '(diff-mode-hook (quote ((lambda nil (diff-auto-refine-mode 1)))))
  '(diff-switches "-u")
+ '(edit-server-done-hook nil)
  '(edit-server-new-frame nil)
  '(fill-column 98)
  '(flyspell-delay 30)
  '(flyspell-delayed-commands nil)
  '(frame-background-mode (quote light))
  '(global-auto-revert-mode nil)
- '(global-highlight-changes-mode t)
+ '(global-highlight-changes-mode nil)
  '(global-subword-mode t)
  '(global-visual-line-mode nil)
  '(global-whitespace-mode t)
@@ -50,6 +51,7 @@
  '(line-move-visual nil)
  '(ls-lisp-dirs-first t)
  '(magit-process-popup-time 1)
+ '(magit-server-window-for-rebase (quote pop-to-buffer))
  '(magit-status-buffer-switch-function (quote switch-to-buffer))
  '(nxml-child-indent 4)
  '(nxml-where-global-mode nil)
@@ -81,7 +83,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "#ffffff" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 1 :width normal :foundry "default" :family "default"))))
+ '(default ((t (:inherit nil :stipple nil :background "#ffffff" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 97 :width semi-condensed :foundry "misc" :family "6x13"))))
  '(font-lock-keyword-face ((((class color) (min-colors 8)) (:foreground "Purple"))))
  '(highlight-changes ((t (:background "alice blue"))))
  '(highlight-changes-delete ((t (:background "bisque1"))))
