@@ -38,7 +38,7 @@
   (add-hook 'write-file-functions 'write-file-py-cleanup-imports nil t))
 
 (defun my-flymake-error-at-point ()
-  (condition-case nil
+  (condition-case  nil
       (flymake-ler-text (car (nth 0 (flymake-find-err-info flymake-err-info
                                                            (flymake-current-line-no)))))
     (error (error "no flymake error at point"))))
@@ -307,7 +307,17 @@
       (list "pyflakes" (list local-file))))
   (add-to-list 'flymake-allowed-file-name-masks
                '("\\.py\\'" flymake-pyflakes-init)))
-(add-hook 'find-file-hook 'flymake-find-file-hook)
+
+(defun safer-flymake-find-file-hook ()
+  "Don't barf if we can't open this flymake file"
+  (let ((flymake-filename
+         (flymake-create-temp-inplace (buffer-file-name) "flymake")))
+    (if (file-writable-p flymake-filename)
+        (flymake-find-file-hook)
+      (message
+       (format
+        "Couldn't enable flymake; permission denied on %s" flymake-filename)))))
+(add-hook 'find-file-hook 'safer-flymake-find-file-hook)
 
 (defun py-imports-region ()
   (save-excursion
