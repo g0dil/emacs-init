@@ -53,6 +53,7 @@
  '(ispell-program-name "c:/cygwin/bin/aspell.exe")
  '(line-move-visual nil)
  '(ls-lisp-dirs-first t)
+ '(magit-default-tracking-name-function (quote magit-default-tracking-name-branch-only))
  '(magit-process-popup-time 1)
  '(magit-server-window-for-rebase (quote pop-to-buffer))
  '(magit-status-buffer-switch-function (quote switch-to-buffer))
@@ -80,7 +81,7 @@
  '(which-function-mode nil)
  '(whitespace-action (quote (auto-cleanup warn-if-read-only)))
  '(whitespace-line-column 100)
- '(whitespace-style (quote (face trailing space-before-tab newline indentation empty space-after-tab lines)))
+ '(whitespace-style (quote (face trailing space-before-tab newline indentation empty space-after-tab lines-tail)))
  '(x-select-enable-clipboard t))
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
