@@ -89,6 +89,8 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "#ffffff" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 97 :width semi-condensed :foundry "misc" :family "6x13"))))
+ '(ediff-even-diff-B ((t (:background "yellow"))))
+ '(ediff-odd-diff-A ((t (:background "yellow"))))
  '(font-lock-keyword-face ((((class color) (min-colors 8)) (:foreground "Purple"))))
  '(highlight-changes ((t (:background "alice blue"))))
  '(highlight-changes-delete ((t (:background "bisque1"))))
