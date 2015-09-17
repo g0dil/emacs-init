@@ -319,6 +319,15 @@
         "Couldn't enable flymake; permission denied on %s" flymake-filename)))))
 (add-hook 'find-file-hook 'safer-flymake-find-file-hook)
 
+(defun py-skip-few-lines (&optional count)
+  (if (null count) (setq count 3))
+  (let ((blanks 0))
+    (while
+        (and (or (when (eolp) (setq count 0) (incf blanks) t)
+                 (when (> count 0) (decf count) t))
+             (< (forward-line 1) 1)))
+    (> blanks 0)))
+
 (defun py-imports-region ()
   (save-excursion
     (goto-char (point-min))
@@ -326,6 +335,9 @@
                 (looking-at "__future__")))
     (beginning-of-line)
     (setq beg (point))
+    (while (and (py-skip-few-lines)
+                (looking-at "import\\s-+\\|from\\s-+"))
+      (setq beg (point)))
     (if (not (looking-at "\\(import\\s-+\\|from\\s-+\\)"))
         (cons beg beg)
       (while (looking-at "\\(import\\s-+\\|from\\s-+\\)")

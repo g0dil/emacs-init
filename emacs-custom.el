@@ -60,6 +60,7 @@
  '(nxml-child-indent 4)
  '(nxml-where-global-mode nil)
  '(nxml-where-header nil)
+ '(org-startup-indented t)
  '(pop-up-windows nil)
  '(rng-validate-chunk-size 2000)
  '(rng-validate-delay 3)

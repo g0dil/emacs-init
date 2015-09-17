@@ -120,15 +120,30 @@
       (grep (format "git ls-files -z | xargs -r0 grep -nwHF %s | cat -" symbol)))))
 
 (global-set-key "\C-cGF" 'git-files-find-symbol)
+
 (defun dired-git-files ()
   (interactive)
-  (let ((default-directory (magit-get-top-dir default-directory))
+  (let ((default-directory (magit-get-top-dir default-directory))\
         (ls-lisp-use-insert-directory-program t)
         files)
-    (setq files (shell-command-to-string "git ls-files"))
-    (dired (cons default-directory (split-string files "\n")))))
+    (setq files (delete-if '(lambda (file) (string= file ""))
+                           (split-string (shell-command-to-string "git ls-files") "\n")))
+    (dired (cons default-directory files))))
 
 (global-set-key "\C-cGD" 'dired-git-files)
+
+(defun dired-grep-git-files (regexp &optional words-only)
+  (interactive "sRegexp: \nP")
+  (let ((default-directory (magit-get-top-dir default-directory))
+        (cmd (format "git ls-files -z | xargs -r0 grep -l -E%s -- %s | cat -"
+                     (if words-only " -w" "") (shell-quote-argument regexp))))
+    (if (not default-directory)
+        (error "not in Git repository"))
+    (setq files (delete-if '(lambda (file) (string= file ""))
+                           (split-string (shell-command-to-string cmd)  "\n")))
+    (dired (cons default-directory files))))
+
+(global-set-key "\C-cGH" 'dired-grep-git-files)
 
 (defun magit-svn-fetch ()
   (interactive)

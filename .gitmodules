@@ -15,3 +15,9 @@ url = git://g0dil.de/emacsstuff.git
 [submodule "git-wip"]
 	path = git-wip
 	url = https://github.com/bartman/git-wip.git
+[submodule "emacs-window-toggle"]
+	path = emacs-window-toggle
+	url = https://gist.github.com/3383607.git
+[submodule "org-mode"]
+	path = org-mode
+	url = git://orgmode.org/org-mode.git

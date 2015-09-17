@@ -207,3 +207,4 @@ the buffer stack in the current window."
     (shrink-window-horizontally (- (- width (window-width) (* window-min-width (1- count)))))))
 
 (global-set-key "\C-x=" 'safe-max-window-horizontally)
+(global-set-key "\C-x-" 'maximize-window-15)
