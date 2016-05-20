@@ -15,3 +15,11 @@
   (require 'org-version)
 
   (setq org-odt-data-dir (concat base "org-mode/etc")))
+
+(defun my-setup-org ()
+  (visual-line-mode 1)
+  (font-lock-mode 0)
+  (whitespace-mode 0)
+  (font-lock-mode 1))
+
+(add-hook 'org-mode-hook 'my-setup-org)

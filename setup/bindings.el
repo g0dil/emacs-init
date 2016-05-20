@@ -22,6 +22,8 @@
         )
     (whitespace-mode 1)
     ;(develock-mode 1)
-    ))
+    )
+  ; for some reason, the font-lock information is only updated when running normal-mode again
+  (normal-mode))
 
 (global-set-key "\C-c' " 'toggle-whitespace-modes)

@@ -35,7 +35,7 @@
   nil)
 
 (defun python-init-auto-cleanup-imports-on-save ()
-  (add-hook 'write-file-functions 'write-file-py-cleanup-imports nil t))
+  (add-hook 'write-contents-functions 'write-file-py-cleanup-imports nil t))
 
 (defun my-flymake-error-at-point ()
   (condition-case  nil
