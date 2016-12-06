@@ -21,3 +21,6 @@ url = git://g0dil.de/emacsstuff.git
 [submodule "org-mode"]
 	path = org-mode
 	url = git://orgmode.org/org-mode.git
+[submodule "groovy-emacs-modes"]
+	path = groovy-emacs-modes
+	url = https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes.git
