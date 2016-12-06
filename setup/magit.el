@@ -119,7 +119,16 @@
     (let ((default-directory dir))
       (grep (format "git ls-files -z | xargs -r0 grep -nwHF %s | cat -" symbol)))))
 
+(defun git-files-find-class-decl (symbol)
+  (interactive (list (read-string "Symbol: " (current-word))))
+  (let ((dir (magit-get-top-dir default-directory)))
+    (if (not dir) (error "No git repository"))
+    (let ((default-directory dir))
+      (grep (format "git ls-files -z | xargs -r0 grep -nwHF %s | grep -Ew '(class|struct)' | cat -"
+                    symbol)))))
+
 (global-set-key "\C-cGF" 'git-files-find-symbol)
+(global-set-key "\C-cGC" 'git-files-find-class-decl)
 
 (defun dired-git-files ()
   (interactive)
@@ -155,4 +164,5 @@
   (interactive "P")
   (quit-window kill-buffer))
 
-(setq magit-diff-options '("-w"))
+; ignore whitespace
+; (setq magit-diff-options '("-w"))
