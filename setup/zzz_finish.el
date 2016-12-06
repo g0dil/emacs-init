@@ -10,3 +10,8 @@
 (setq whitespace-style
       (nconc (delete 'lines (delete 'lines-tail whitespace-style))
              '(lines-tail)))
+
+; For some unfathomable reason display-buffer always want's to resize my windows ...
+(defadvice display-buffer-use-some-window (around no-resize activate)
+  (flet ((window-resize (&rest args) nil))
+    ad-do-it))

@@ -5,3 +5,6 @@ eshell/
 *.elc
 server
 bookmarks
+places
+ido.last
+

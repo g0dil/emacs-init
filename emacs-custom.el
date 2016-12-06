@@ -1,12 +1,14 @@
 (custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(auto-install-install-confirm nil)
  '(auto-install-replace-confirm nil)
  '(auto-install-save-confirm nil)
- '(auto-save-file-name-transforms (quote (("\\`.*\\([^/]*\\)\\'" "~/.emacs.d/autosave/\\1" t))))
+ '(auto-save-file-name-transforms
+   (quote
+    (("\\`.*\\([^/]*\\)\\'" "~/.emacs.d/autosave/\\1" t))))
  '(backup-directory-alist (quote (("." . "~/.emacs.d/backups"))))
  '(c-backslash-column 99)
  '(c-basic-offset 4)
@@ -24,17 +26,23 @@
  '(dabbrev-abbrev-char-regexp "\\sw")
  '(debug-on-error nil)
  '(default-input-method "latin-1-prefix")
- '(develock-max-column-plist (quote (emacs-lisp-mode 99 lisp-interaction-mode w change-log-mode t texinfo-mode t c-mode 99 c++-mode 99 java-mode 99 jde-mode 99 html-mode 99 html-helper-mode 99 cperl-mode 99 perl-mode 99 mail-mode t message-mode t cmail-mail-mode t tcl-mode 99 ruby-mode 99)))
+ '(develock-max-column-plist
+   (quote
+    (emacs-lisp-mode 99 lisp-interaction-mode w change-log-mode t texinfo-mode t c-mode 99 c++-mode 99 java-mode 99 jde-mode 99 html-mode 99 html-helper-mode 99 cperl-mode 99 perl-mode 99 mail-mode t message-mode t cmail-mail-mode t tcl-mode 99 ruby-mode 99)))
  '(diff-mode-hook (quote ((lambda nil (diff-auto-refine-mode 1)))))
  '(diff-switches "-u")
  '(edit-server-done-hook nil)
  '(edit-server-new-frame nil)
  '(fill-column 98)
- '(flymake-allowed-file-name-masks (quote (("\\.java\\'" flymake-simple-make-java-init flymake-simple-java-cleanup) ("[0-9]+\\.tex\\'" flymake-master-tex-init flymake-master-cleanup) ("\\.tex\\'" flymake-simple-tex-init))))
+ '(flymake-allowed-file-name-masks
+   (quote
+    (("\\.java\\'" flymake-simple-make-java-init flymake-simple-java-cleanup)
+     ("[0-9]+\\.tex\\'" flymake-master-tex-init flymake-master-cleanup)
+     ("\\.tex\\'" flymake-simple-tex-init))))
  '(flyspell-delay 30)
  '(flyspell-delayed-commands nil)
  '(frame-background-mode (quote light))
- '(git-commit-fill-column 158)
+ '(git-commit-fill-column 99)
  '(global-auto-revert-mode nil)
  '(global-highlight-changes-mode nil)
  '(global-subword-mode t)
@@ -44,7 +52,9 @@
  '(highlight-changes-face-list nil)
  '(highlight-changes-global-changes-existing-buffers t)
  '(hippie-expand-dabbrev-as-symbol nil)
- '(hippie-expand-try-functions-list (quote (try-complete-file-name-partially try-complete-file-name try-expand-dabbrev try-expand-dabbrev-all-buffers try-expand-dabbrev-from-kill try-expand-all-abbrevs try-expand-line try-expand-list)))
+ '(hippie-expand-try-functions-list
+   (quote
+    (try-complete-file-name-partially try-complete-file-name try-expand-dabbrev try-expand-dabbrev-all-buffers try-expand-dabbrev-from-kill try-expand-all-abbrevs try-expand-line try-expand-list)))
  '(hs-isearch-open nil)
  '(ido-mode (quote both) nil (ido))
  '(indent-tabs-mode nil)
@@ -54,10 +64,11 @@
  '(line-move-visual nil)
  '(ls-lisp-dirs-first t)
  '(magit-default-tracking-name-function (quote magit-default-tracking-name-branch-only))
+ '(magit-display-buffer-function (quote magit-display-buffer-same-window-except-diff-v1))
  '(magit-process-popup-time 1)
  '(magit-server-window-for-rebase (quote pop-to-buffer))
  '(magit-status-buffer-switch-function (quote switch-to-buffer))
- '(nxml-child-indent 4)
+ '(nxml-child-indent 2)
  '(nxml-where-global-mode nil)
  '(nxml-where-header nil)
  '(org-startup-indented t)
@@ -70,6 +81,7 @@
  '(server-done-hook nil)
  '(server-kill-new-buffers t)
  '(server-mode t)
+ '(server-switch-hook nil)
  '(server-temp-file-regexp "^/tmp/Re\\|/draft\\|.*/itsalltext/.*$")
  '(server-window nil)
  '(show-paren-mode t)
@@ -78,17 +90,21 @@
  '(tool-bar-mode nil)
  '(uniquify-buffer-name-style (quote forward) nil (uniquify))
  '(visual-line-fringe-indicators (quote (left-curly-arrow right-curly-arrow)))
- '(which-func-modes (quote (nxml-mode emacs-lisp-mode c-mode c++-mode perl-mode cperl-mode python-mode makefile-mode sh-mode fortran-mode f90-mode ada-mode diff-mode)))
+ '(which-func-modes
+   (quote
+    (nxml-mode emacs-lisp-mode c-mode c++-mode perl-mode cperl-mode python-mode makefile-mode sh-mode fortran-mode f90-mode ada-mode diff-mode)))
  '(which-function-mode nil)
  '(whitespace-action (quote (auto-cleanup warn-if-read-only)))
  '(whitespace-line-column 100)
- '(whitespace-style (quote (face trailing space-before-tab newline indentation empty space-after-tab lines-tail)))
+ '(whitespace-style
+   (quote
+    (face trailing space-before-tab newline indentation empty space-after-tab lines-tail)))
  '(x-select-enable-clipboard t))
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(default ((t (:inherit nil :stipple nil :background "#ffffff" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 97 :width semi-condensed :foundry "misc" :family "6x13"))))
  '(ediff-even-diff-B ((t (:background "yellow"))))
  '(ediff-odd-diff-A ((t (:background "yellow"))))

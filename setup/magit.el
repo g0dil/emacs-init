@@ -4,7 +4,7 @@
                                    (or load-file-name
                                        (when (boundp 'bytecomp-filename) bytecomp-filename)
                                        buffer-file-name))))
-                                "magit"))
+                                "magit/lisp"))
 
 (add-to-list 'load-path (concat (file-name-directory
                                  (directory-file-name
@@ -12,7 +12,7 @@
                                    (or load-file-name
                                        (when (boundp 'bytecomp-filename) bytecomp-filename)
                                        buffer-file-name))))
-                                "git-modes"))
+                                "with-editor"))
 
 (add-to-list 'load-path (concat (file-name-directory
                                  (directory-file-name
@@ -35,6 +35,9 @@
             '(run open listen connect stop))))
 
 (require 'magit)
+
+(setq magit-refs-local-branch-format "%C %-48n %U%m\n")
+(setq magit-refs-remote-branch-format "%C %-48n %m\n")
 
 (when (eq system-type 'windows-nt)
 
@@ -77,12 +80,12 @@
       (kill-buffer " *my-shell-command-to-string*"))))
 
 (defun git-repo-files ()
-  (let ((default-directory (magit-get-top-dir default-directory)))
+  (let ((default-directory (magit-toplevel default-directory)))
     (split-string (my-shell-command-to-string "git ls-files") "\n")))
 
 (defun find-file-in-git-repo ()
   (interactive)
-  (let ((repo (magit-get-top-dir default-directory))
+  (let ((repo (magit-toplevel default-directory))
         (files (git-repo-files)))
     (find-file
      (concat repo
@@ -93,10 +96,10 @@
 
 (defun grep-in-git-repo (regexp &optional words-only)
   (interactive "sGrep files in Git repo regexp: \nP")
-  (let ((default-directory (magit-get-top-dir default-directory)))
+  (let ((default-directory (magit-toplevel default-directory)))
     (if (not default-directory)
         (error "not a Git directory"))
-    (grep (format "git ls-files -z | xargs -r0 grep -nH -E%s -- %s | cat -"
+    (grep (format "git ls-files -z | xargs -r0 grep -d skip -nH -E%s -- %s"
                   (if words-only " -w" "") (shell-quote-argument regexp)))))
 
 (setenv "GIT_PAGER" "cat")
@@ -105,7 +108,7 @@
 
 (defun find-file-maybe-git (&optional nogit)
   (interactive "P")
-  (if (and (not nogit) (magit-get-top-dir default-directory))
+  (if (and (not nogit) (magit-toplevel default-directory))
       (call-interactively 'find-file-in-git-repo)
     (call-interactively 'ido-find-file)))
 
@@ -114,10 +117,10 @@
 
 (defun git-files-find-symbol (symbol)
   (interactive (list (read-string "Symbol: " (current-word))))
-  (let ((dir (magit-get-top-dir default-directory)))
+  (let ((dir (magit-toplevel default-directory)))
     (if (not dir) (error "No git repository"))
     (let ((default-directory dir))
-      (grep (format "git ls-files -z | xargs -r0 grep -nwHF %s | cat -" symbol)))))
+      (grep (format "git ls-files -z | xargs -r0 grep -d skip -nwHF %s" symbol)))))
 
 (defun git-files-find-class-decl (symbol)
   (interactive (list (read-string "Symbol: " (current-word))))
@@ -132,7 +135,7 @@
 
 (defun dired-git-files ()
   (interactive)
-  (let ((default-directory (magit-get-top-dir default-directory))\
+  (let ((default-directory (magit-toplevel default-directory))\
         (ls-lisp-use-insert-directory-program t)
         files)
     (setq files (delete-if '(lambda (file) (string= file ""))
@@ -143,8 +146,8 @@
 
 (defun dired-grep-git-files (regexp &optional words-only)
   (interactive "sRegexp: \nP")
-  (let ((default-directory (magit-get-top-dir default-directory))
-        (cmd (format "git ls-files -z | xargs -r0 grep -l -E%s -- %s | cat -"
+  (let ((default-directory (magit-toplevel default-directory))
+        (cmd (format "git ls-files -z | xargs -r0 grep -d skip -l -E%s -- %s"
                      (if words-only " -w" "") (shell-quote-argument regexp))))
     (if (not default-directory)
         (error "not in Git repository"))

@@ -9,9 +9,6 @@ url = git://github.com/magit/magit.git
 [submodule "emacsstuff"]
 path = emacsstuff
 url = git://g0dil.de/emacsstuff.git
-[submodule "git-modes"]
-	path = git-modes
-	url = https://github.com/magit/git-modes.git
 [submodule "git-wip"]
 	path = git-wip
 	url = https://github.com/bartman/git-wip.git
@@ -24,3 +21,6 @@ url = git://g0dil.de/emacsstuff.git
 [submodule "groovy-emacs-modes"]
 	path = groovy-emacs-modes
 	url = https://github.com/Groovy-Emacs-Modes/groovy-emacs-modes.git
+[submodule "with-editor"]
+	path = with-editor
+	url = https://github.com/magit/with-editor

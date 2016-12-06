@@ -1,0 +1,7 @@
+The following packages are required:
+
+    dash-el
+
+Create directory
+
+    ~/.emacs.d/autosave
