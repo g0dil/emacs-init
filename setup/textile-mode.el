@@ -8,7 +8,7 @@
 
 (require 'textile-mode)
 
-(add-to-list 'auto-mode-alist '("/itsalltext/otds.traveltainment.de" . textile-mode))
+(add-to-list 'auto-mode-alist '("/itsalltext/tpm.traveltainment.int" . textile-mode))
 (add-to-list 'edit-server-url-major-mode-alist '("tpm.traveltainment.int" . textile-mode))
 
 (setq textile-font-lock-keywords
@@ -18,3 +18,6 @@
                           (eq (car face) 'quote)
                           (eq (cadr face) 'textile-acronym-face)) return elt)
             textile-font-lock-keywords))
+
+(require 'longlines)
+(add-hook 'textile-mode-hook 'longlines-mode)
