@@ -124,10 +124,13 @@
 
 (defun git-files-find-class-decl (symbol)
   (interactive (list (read-string "Symbol: " (current-word))))
-  (let ((dir (magit-get-top-dir default-directory)))
+  (let ((dir (magit-toplevel default-directory)))
     (if (not dir) (error "No git repository"))
     (let ((default-directory dir))
-      (grep (format "git ls-files -z | xargs -r0 grep -nwHF %s | grep -Ew '(class|struct)' | cat -"
+      (grep (format (concat "git ls-files -z"
+                            " | xargs -r0 grep -d skip -nwHF %s"
+                            " | grep -Ew '(class|struct|typedef|using)'"
+                            " | grep -vEw 'friend'")
                     symbol)))))
 
 (global-set-key "\C-cGF" 'git-files-find-symbol)
