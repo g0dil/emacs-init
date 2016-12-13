@@ -13,3 +13,12 @@
 
 (define-key c++-mode-map "\C-c\C-c" 'recompile)
 (define-key c++-mode-map "\C-c\C-i" 'comment-indent)
+
+;;; remove some unnecessary compilation error regexp settings which just cause problems
+(setq compilation-error-regexp-alist (delq 'cucumber compilation-error-regexp-alist))
+(setq compilation-error-regexp-alist (delq 'mips-1 compilation-error-regexp-alist))
+
+;;; remove matching whitespace in filenames for 'gnu' style error messages
+(setf (nth 1 (assoc 'gnu compilation-error-regexp-alist-alist))
+      (replace-regexp-in-string (regexp-quote " [^-/\n]\\|") ""
+                                (nth 1 (assoc 'gnu compilation-error-regexp-alist-alist)) t t))
