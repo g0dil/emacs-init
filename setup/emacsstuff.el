@@ -22,3 +22,17 @@
 (setf (nth 1 (assoc 'gnu compilation-error-regexp-alist-alist))
       (replace-regexp-in-string (regexp-quote " [^-/\n]\\|") ""
                                 (nth 1 (assoc 'gnu compilation-error-regexp-alist-alist)) t t))
+
+(defun debug-compilation-error-regexps ()
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (beginning-of-line)
+      (narrow-to-region (point) (save-excursion (forward-line 1) (point)))
+      (let ((match (loop for key in compilation-error-regexp-alist
+                         for elt = (assoc key compilation-error-regexp-alist-alist)
+                         if (and elt (re-search-forward (cadr elt) nil t))
+                         thereis key)))
+        (if match
+            (message "compilation-error-regexp-alist-alist key: %s" match)
+          (error "no error line at point"))))))
