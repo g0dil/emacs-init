@@ -40,7 +40,7 @@
 (defun my-flymake-error-at-point ()
   (condition-case  nil
       (flymake-ler-text (car (nth 0 (flymake-find-err-info flymake-err-info
-                                                           (flymake-current-line-no)))))
+                                                           (locate-current-line-number)))))
     (error (error "no flymake error at point"))))
 
 (defun my-flymake-show-error ()
