@@ -170,5 +170,13 @@
   (interactive "P")
   (quit-window kill-buffer))
 
+(defun magit-diff-master-mergebase (&optional args files)
+  (interactive (magit-diff-arguments))
+  (magit-diff-working-tree
+   (magit-git-string "merge-base" "master" "HEAD") args files))
+
+(magit-define-popup-action 'magit-diff-popup
+  ?m "Diff merge-base master" 'magit-diff-master-mergebase)
+
 ; ignore whitespace
 ; (setq magit-diff-options '("-w"))
