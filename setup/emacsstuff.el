@@ -36,3 +36,16 @@
         (if match
             (message "compilation-error-regexp-alist-alist key: %s" match)
           (error "no error line at point"))))))
+
+(defun c++-mode-update-font-lock-keywords ()
+  (font-lock-add-keywords
+   nil '(;; complete some fundamental keywords
+         ;; add the new C++11 keywords
+         ("\\<\\(alignof\\|alignas\\|constexpr\\|decltype\\|noexcept\\|nullptr\\|static_assert\\|thread_local\\|override\\|final\\)\\>" . font-lock-keyword-face)
+         ("\\<\\(char[0-9]+_t\\)\\>" . font-lock-keyword-face)
+         ;; hexadecimal numbers
+         ("\\<0[xX][0-9A-Fa-f]+\\>" . font-lock-constant-face)
+         ;; integer/float/scientific numbers
+         ("\\<[\\-+]*[0-9]*\\.?[0-9]+\\([ulUL]+\\|[eE][\\-+]?[0-9]+\\)?\\>" . font-lock-constant-face))))
+
+(add-hook 'c++-mode-hook 'c++-mode-update-font-lock-keywords t)
