@@ -27,3 +27,9 @@ url = git://g0dil.de/emacsstuff.git
 [submodule "dtrt-indent"]
 	path = dtrt-indent
 	url = https://github.com/jscheid/dtrt-indent.git
+[submodule "rtags"]
+	path = rtags
+	url = https://github.com/Andersbakken/rtags.git
+[submodule "company-mode"]
+	path = company-mode
+	url = https://github.com/company-mode/company-mode.git

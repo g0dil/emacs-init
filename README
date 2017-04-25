@@ -1,7 +1,13 @@
-The following packages are required:
-
-    dash-el
+Install the required ubuntu packages (see UBUNTU-PACKAGES)
 
 Create directory
 
     ~/.emacs.d/autosave
+
+The rtags tools have to be compiled:
+
+    $ cd rtags
+    $ cmake .
+    $ make
+
+To use rtags, the rtags daemon must be started and compilation databases added
