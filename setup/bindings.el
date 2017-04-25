@@ -13,17 +13,27 @@
 ;(require 'develock)
 ;(require 'develock-py)
 
-(defun toggle-whitespace-modes ()
+(defun toggle-whitespace-mode (&optional mode)
   (interactive)
-  (if whitespace-mode
-      (progn
-        (whitespace-mode 0)
-        ;(develock-mode 0)
-        )
-    (whitespace-mode 1)
-    ;(develock-mode 1)
-    )
-  ; for some reason, the font-lock information is only updated when running normal-mode again
-  (normal-mode))
+  ;; toggle whitespace mode between:
+  ;; * everything as globaly configured
+  ;; * as above but disable lines-tail
+  ;; * nothing
+  (if (null mode)
+      (if (local-variable-p 'whitespace-style)
+          (if (null whitespace-style)
+              (setq mode 'default)
+            (setq mode 'none))
+        (setq mode 'longlines)))
+  (cond ((eq mode 'default)
+         (kill-local-variable 'whitespace-style))
+        ((eq mode 'longlines)
+         (setq-local whitespace-style (remove 'lines-tail (default-value 'whitespace-style))))
+        ((eq mode 'none)
+         (setq-local whitespace-style nil)))
+  (whitespace-mode -1)
+  (sit-for 0)
+  (whitespace-mode 1)
+  (message "whitespace: %s" mode))
 
-(global-set-key "\C-c' " 'toggle-whitespace-modes)
+(global-set-key "\C-c' " 'toggle-whitespace-mode)
