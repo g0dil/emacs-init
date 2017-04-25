@@ -9,6 +9,7 @@
 (global-set-key "\C-c'c" 'toggle-case-fold-search)
 (global-set-key "\C-c's" 'flyspell-mode)
 (global-set-key "\C-c'a" 'global-auto-revert-mode)
+(global-set-key "\C-cF" 'ffap)
 
 ;(require 'develock)
 ;(require 'develock-py)
