@@ -33,3 +33,6 @@ url = git://g0dil.de/emacsstuff.git
 [submodule "company-mode"]
 	path = company-mode
 	url = https://github.com/company-mode/company-mode.git
+[submodule "system-cores.el"]
+	path = system-cores.el
+	url = https://github.com/aaron-em/system-cores.el.git
