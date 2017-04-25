@@ -59,12 +59,19 @@ window smaller than MIN-HEIGHT lines."
 (defconst setup-my-windows-junk-buffers
   '("*scratch*" "*Messages*" "*Calculator" "*Calc Trail*" "*compilation*" "*fetchmail*"))
 
-(defun setup-my-windows ()
-  (interactive)
-  (let ((width 100) (min 100) (distribute t)
-        (currentbuffer (current-buffer))
-        (currentwindow (selected-window))
-        topwindows firstwindow newwindow newtopwindows)
+(defvar my-windows-count nil)
+
+(defun setup-my-windows (&optional n)
+  (interactive "P")
+  (if n
+      (if (integerp n)
+          (setq my-windows-count n)
+        (setq my-windows-count nil)))
+  (let* ((width (if my-windows-count (- (/ (frame-width) my-windows-count) 4) 100))
+         (min width) (distribute t)
+         (currentbuffer (current-buffer))
+         (currentwindow (selected-window))
+         topwindows firstwindow newwindow newtopwindows)
     (walk-windows (function (lambda (w)
                               (let ((e (window-edges w)))
                                 (if (< (nth 1 e) window-min-height)
