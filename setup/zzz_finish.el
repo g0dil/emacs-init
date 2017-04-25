@@ -1,3 +1,5 @@
+(load custom-file)
+
 ; Don't ask why we need this ...
 
 ; I just don't know where why this is enabled by default in my config ... can't find it

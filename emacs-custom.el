@@ -76,6 +76,15 @@
  '(rng-validate-chunk-size 2000)
  '(rng-validate-delay 3)
  '(rng-validate-quick-delay 1.5)
+ '(rtags-use-helm nil)
+ '(safe-local-variable-values
+   (quote
+    ((elisp-project-autoload-file-name . "cc-autoload.el")
+     (ccide-auto-format-tag . "auto-uncrustify")
+     (ccide-uncrustify-config . "~/src/search.uncrustify")
+     (ccide-auto-format-tag "auto-uncrustify")
+     (ccide-uncrustify-config "~/src/search.uncrustify")
+     (whitespace-mode))))
  '(save-place t nil (saveplace))
  '(scroll-bar-mode nil)
  '(server-done-hook nil)
