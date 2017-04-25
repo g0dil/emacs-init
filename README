@@ -1,13 +1,13 @@
-Install the required ubuntu packages (see UBUNTU-PACKAGES)
-
-Create directory
+* Don't forget to (recursively !) initialize git submodules
+* Install the required ubuntu packages (see UBUNTU-PACKAGES)
+* Create directory
 
     ~/.emacs.d/autosave
 
-The rtags tools have to be compiled:
+* The rtags tools have to be compiled:
 
     $ cd rtags
     $ cmake .
     $ make
 
-To use rtags, the rtags daemon must be started and compilation databases added
+  To use rtags, the rtags daemon must be started and compilation databases added

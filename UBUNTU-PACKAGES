@@ -2,4 +2,6 @@ dash-el
 pymacs
 python-ropemacs
 pyflakes
+cmake
+llvm
 libclang-dev
