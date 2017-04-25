@@ -31,6 +31,7 @@
     (emacs-lisp-mode 99 lisp-interaction-mode w change-log-mode t texinfo-mode t c-mode 99 c++-mode 99 java-mode 99 jde-mode 99 html-mode 99 html-helper-mode 99 cperl-mode 99 perl-mode 99 mail-mode t message-mode t cmail-mail-mode t tcl-mode 99 ruby-mode 99)))
  '(diff-mode-hook (quote ((lambda nil (diff-auto-refine-mode 1)))))
  '(diff-switches "-u")
+ '(dtrt-indent-mode t nil (dtrt-indent))
  '(edit-server-done-hook nil)
  '(edit-server-new-frame nil)
  '(fill-column 98)

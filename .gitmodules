@@ -24,3 +24,6 @@ url = git://g0dil.de/emacsstuff.git
 [submodule "with-editor"]
 	path = with-editor
 	url = https://github.com/magit/with-editor
+[submodule "dtrt-indent"]
+	path = dtrt-indent
+	url = https://github.com/jscheid/dtrt-indent.git
