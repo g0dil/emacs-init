@@ -7,3 +7,6 @@
   (add-to-list 'load-path (concat base "lib"))
   (add-to-list 'load-path (concat base "auto-install"))
   (setq custom-file (concat base "emacs-custom.el")))
+
+(setenv "LANG" nil)
+(prefer-coding-system 'utf-8)
