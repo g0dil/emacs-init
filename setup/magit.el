@@ -178,5 +178,33 @@
 (magit-define-popup-action 'magit-diff-popup
   ?m "Diff merge-base master" 'magit-diff-master-mergebase)
 
+(magit-define-popup-switch 'magit-log-popup
+  ?f "first parent" "--first-parent")
+
+(require 'ffap)
+
+(defun g0dil-magit-old-version-jump-to-current ()
+  (interactive)
+  (let ((current-file (ffap-file-exists-string
+                       (file-name-nondirectory
+                        (replace-regexp-in-string "\\.~.*$" "" (buffer-name))))))
+    (if current-file
+        (g0dil-goto-equivalent-position current-file)
+      (error "current version of file not found"))))
+
+(define-key magit-blob-mode-map "c" 'g0dil-magit-old-version-jump-to-current)
+
+(defun g0dil-magit-diff-jump-to-current ()
+  (interactive)
+  (let ((section-file-name (loop for ident in (magit-section-ident (magit-current-section))
+                                 if (and (consp ident) (eq (car ident) 'file))
+                                 return (cdr ident)
+                                 finally return nil)))
+    (if (ffap-file-exists-string section-file-name)
+        (g0dil-goto-equivalent-position section-file-name)
+      (error "current version of file not found"))))
+
+(define-key magit-revision-mode-map (kbd "C-c RET") 'g0dil-magit-diff-jump-to-current)
+
 ; ignore whitespace
 ; (setq magit-diff-options '("-w"))

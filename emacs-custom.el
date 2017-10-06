@@ -16,6 +16,8 @@
  '(column-number-mode t)
  '(comment-column 60)
  '(comment-fill-column 98)
+ '(company-idle-delay 600)
+ '(company-tooltip-idle-delay 10)
  '(compilation-ask-about-save nil)
  '(compilation-scroll-output t)
  '(csv-align-padding 0)
@@ -66,6 +68,7 @@
  '(ls-lisp-dirs-first t)
  '(magit-default-tracking-name-function (quote magit-default-tracking-name-branch-only))
  '(magit-display-buffer-function (quote magit-display-buffer-same-window-except-diff-v1))
+ '(magit-log-arguments (quote ("-n256" "--graph" "--decorate")))
  '(magit-process-popup-time 1)
  '(magit-server-window-for-rebase (quote pop-to-buffer))
  '(magit-status-buffer-switch-function (quote switch-to-buffer))
@@ -77,7 +80,7 @@
  '(rng-validate-chunk-size 2000)
  '(rng-validate-delay 3)
  '(rng-validate-quick-delay 1.5)
- '(rtags-use-helm nil)
+ '(rtags-use-helm nil t)
  '(safe-local-variable-values
    (quote
     ((elisp-project-autoload-file-name . "cc-autoload.el")
