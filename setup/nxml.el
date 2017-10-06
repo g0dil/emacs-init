@@ -131,7 +131,9 @@
     (save-excursion
       (insert "</" name ">")))))
 
-(define-key nxml-mode-map (kbd "\C-c ." ) 'nxml-complete-and-autoclose-element)
+(define-key nxml-mode-map (kbd "\C-c .") 'nxml-complete-and-autoclose-element)
+(define-key nxml-mode-map (kbd "\C-c ,") 'nxml-complete)
+
 (define-key nxml-mode-map (kbd "\C-c\C-c") 'recompile)
 
 (defconst nxml-docbook-common-elements
