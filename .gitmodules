@@ -36,3 +36,6 @@ url = git://g0dil.de/emacsstuff.git
 [submodule "system-cores.el"]
 	path = system-cores.el
 	url = https://github.com/aaron-em/system-cores.el.git
+[submodule "solarized-emacs"]
+	path = solarized-emacs
+	url = https://github.com/bbatsov/solarized-emacs.git
