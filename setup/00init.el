@@ -10,3 +10,4 @@
 
 (setenv "LANG" nil)
 (prefer-coding-system 'utf-8)
+(menu-bar-mode -1)
