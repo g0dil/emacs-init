@@ -6,6 +6,7 @@
                                        buffer-file-name))))
                                 "solarized-emacs"))
 
-(setq solarized-use-less-bold t)
 (setq solarized-distinct-fringe-background t)
+;(setq solarized-use-less-bold nil)
 (require 'solarized-light-theme)
+;(set-face-attribute 'show-paren-match nil :weight 'extra-bold)
