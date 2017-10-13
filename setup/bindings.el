@@ -38,3 +38,5 @@
   (message "whitespace: %s" mode))
 
 (global-set-key "\C-c' " 'toggle-whitespace-mode)
+
+(setq confirm-kill-emacs 'yes-or-no-p)
