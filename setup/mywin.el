@@ -215,5 +215,10 @@ the buffer stack in the current window."
         (error "Current window is not a top window"))
     (shrink-window-horizontally (- (- width (window-width) (* window-min-width (1- count)))))))
 
-(global-set-key "\C-x=" 'safe-max-window-horizontally)
+(defun safe-max-window ()
+  (interactive)
+  (safe-max-window-horizontally)
+  (maximize-window 5))
+
+(global-set-key "\C-x=" 'safe-max-window)
 (global-set-key "\C-x-" 'maximize-window-15)
