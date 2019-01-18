@@ -16,10 +16,15 @@
         (eshell-buffer (get-buffer "*eshell*")))
     (if (not eshell-buffer)
         (error "no *eshell* buffer found"))
-    (pop-to-buffer (get-buffer "*eshell*"))
+    (my-pop-to-buffer (get-buffer "*eshell*"))
     (goto-char (point-max))
     (setq default-directory dir)
-    (insert "\n")
-    (eshell-send-input)))
+    (eshell-interrupt-process)))
 
 (global-set-key "\C-cE" 'eshell-switch-directory-current-buffer)
+
+(setenv "PATH" (concat (getenv "PATH")
+                       ":"
+                       (expand-file-name "~/bin")
+                       ":"
+                       (expand-file-name "~/.local/bin")))

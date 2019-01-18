@@ -36,8 +36,70 @@
 
 (require 'magit)
 
-(setq magit-refs-local-branch-format "%C %-48n %U%m\n")
-(setq magit-refs-remote-branch-format "%C %-48n %m\n")
+;; Add additional %-escapes ...
+(defun magit-insert-branch-1
+    (section branch format current branches face
+             &optional hash message upstream ahead behind gone)
+  "For internal use, don't add to a hook."
+  (let* ((head  (or (car magit-refresh-args) current "HEAD"))
+         (count (and branch
+                     (magit-refs-format-commit-count branch head format)))
+         (mark  (cond ((or (equal branch head)
+                           (and (not branch) (equal head "HEAD")))
+                       (if (equal branch current)
+                           (propertize "@" 'face 'magit-head)
+                         (propertize "#" 'face 'magit-tag)))
+                      ((equal branch current)
+                       (propertize "." 'face 'magit-head)))))
+    (when upstream
+      (setq upstream (propertize upstream 'face
+                                 (if (member upstream branches)
+                                     'magit-branch-local
+                                   'magit-branch-remote))))
+    (magit-insert-heading
+      (format-spec
+       format
+       `((?a . ,(or ahead ""))
+         (?b . ,(or behind ""))
+         (?c . ,(or mark count ""))
+         (?C . ,(or mark " "))
+         (?h . ,(or (propertize hash 'face 'magit-hash) ""))
+         (?m . ,(or message ""))
+         (?n . ,(propertize (or branch "(detached)") 'face face))
+         (?u . ,(or upstream ""))
+         (?U . ,(if upstream (format (propertize " [%s]" 'face 'magit-dimmed)  upstream) ""))
+         (?d . ,(if upstream
+                  (let ((msg (cond
+                              (gone
+                               (concat (propertize gone 'face 'error)))
+                              ((or ahead behind)
+                               (concat (and ahead (format "ahead %s" ahead))
+                                       (and ahead behind ", ")
+                                       (and behind (format "behind %s" behind))))
+                              (t nil))))
+                    (if msg
+                      (format (propertize "[%s] " 'face 'magit-dimmed) msg)
+                      ""))
+                  ""))
+         (?D . ,(if upstream
+                    (format (propertize "[%s%s] " 'face 'magit-dimmed)
+                            upstream
+                            (cond
+                             (gone
+                              (concat ": " (propertize gone 'face 'error)))
+                             ((or ahead behind)
+                              (concat ": "
+                                      (and ahead (format "ahead %s" ahead))
+                                      (and ahead behind ", ")
+                                      (and behind (format "behind %s" behind))))
+                             (t "")))
+                  "")))))
+    (when magit-show-margin
+      (magit-refs-format-margin branch))
+    (magit-refs-insert-cherry-commits head branch section)))
+
+(setq magit-refs-local-branch-format "%C %-48n %-1.1u %d%m")
+(setq magit-refs-remote-branch-format "%C %-48n   %m")
 
 (when (eq system-type 'windows-nt)
 
@@ -70,6 +132,7 @@
     ad-do-it))
 
 (global-set-key "\C-cGS" 'magit-status)
+(global-set-key "\C-cGW" 'magit-file-popup)
 
 (defun my-shell-command-to-string (cmd)
   (shell-command cmd " *my-shell-command-to-string*")
@@ -180,6 +243,13 @@
 
 (magit-define-popup-switch 'magit-log-popup
   ?f "first parent" "--first-parent")
+
+(defun magit-reset-to-upstream ()
+  (interactive)
+  (magit-run-git "reset" "--hard" "@{u}"))
+
+(magit-define-popup-action 'magit-pull-popup
+  ?X "HARD Reset to upstream (force pull after remote rebase)" 'magit-reset-to-upstream)
 
 (require 'ffap)
 

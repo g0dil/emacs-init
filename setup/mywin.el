@@ -22,7 +22,7 @@ to 80."
 window smaller than MIN-HEIGHT lines."
   (interactive)
   ;; this algorithm is copied from window.el / balance-windows()
-  (let ((min-height (or min-height i(+ window-min-height 0)))
+  (let ((min-height (or min-height (+ window-min-height 0)))
         (count -1)
         size)
         ;; Don't count the lines that are above the uppermost windows.
@@ -61,6 +61,15 @@ window smaller than MIN-HEIGHT lines."
 
 (defvar my-windows-count nil)
 
+(defun get-top-windows ()
+  (let (topwindows)
+    (walk-windows (function (lambda (w)
+                              (let ((e (window-edges w)))
+                                (if (< (nth 1 e) window-min-height)
+                                  (setq topwindows (cons (cons (nth 0 e) w) topwindows)))))))
+    (loop for w in (sort topwindows (function (lambda (a b) (< (car a) (car b)))))
+          collect (cdr w) )))
+
 (defun setup-my-windows (&optional n)
   (interactive "P")
   (if n
@@ -73,27 +82,22 @@ window smaller than MIN-HEIGHT lines."
          (min width) (distribute t)
          (currentbuffer (current-buffer))
          (currentwindow (selected-window))
-         topwindows firstwindow newwindow newtopwindows)
-    (walk-windows (function (lambda (w)
-                              (let ((e (window-edges w)))
-                                (if (< (nth 1 e) window-min-height)
-                                    (setq topwindows (cons (list (nth 0 e)
-                                                                 w
-                                                                 (window-buffer w)
-                                                                 (window-point w)
-                                                                 (window-start w)
-                                                                 (equal w currentwindow))
-                                                           topwindows))))))
-                            'nomini)
-    (setq topwindows (sort topwindows (function (lambda (a b) (< (car a) (car b))))))
-    (setq topwindows (loop for w in topwindows
-                           for (pos win buf point start iscurrent) = w
-                           if (not (member (buffer-name buf) setup-my-windows-junk-buffers))
-                           collect w))
+         (topwindows (loop for w in (get-top-windows)
+                           for b = (window-buffer w)
+                           if (not (member (buffer-name b)
+                                           setup-my-windows-junk-buffers))
+                           collect (list (nth 0 (window-edges w))
+                                         w
+                                         b
+                                         (window-point w)
+                                         (window-start w)
+                                         (equal w currentwindow))))
+         firstwindow newwindow newtopwindows newbottomwindow)
     (delete-other-windows (nth 1 (car topwindows)))
     (save-selected-window
-      (select-window (split-window-vertically
-                      (- (window-height) (max 5 (/ (* (frame-height) 15) 100)) -1)))
+      (setq newbottomwindow (split-window-vertically
+                             (- (window-height) (max 5 (/ (* (frame-height) 15) 100)) -1)))
+      (select-window newbottomwindow)
       (switch-to-buffer (get-buffer-create "*compilation*"))
       (if (eq currentbuffer (current-buffer))
           (setq newwindow (selected-window))))
@@ -148,12 +152,31 @@ window smaller than MIN-HEIGHT lines."
       (pjb-balance-windows t))
     (select-window newwindow)
     (if (not (member (buffer-name currentbuffer) setup-my-windows-junk-buffers))
-        (switch-to-buffer currentbuffer))))
+        (switch-to-buffer currentbuffer))
+    newbottomwindow))
 
 (defun my-split-window-sensibly (window)
   (if (and (> (window-height window) (- (frame-height (window-frame window)) window-min-height))
            (> (window-height window) (max 5 (/ (* (frame-height) 15) 100))))
       (split-window-sensibly window)))
+
+(defun my-pop-to-buffer (buffer)
+  ;; display buffer in rightmost window if not displayed currently
+  (let ((w (get-buffer-window buffer)))
+    (unless w
+      (setq w (car (last (get-top-windows)))))
+    (select-window w)
+    (switch-to-buffer buffer)))
+
+(defun my-display-at-bottom (&optional buffer)
+  ;; call my-setup-window and display current-buffer or BUFFER in bottom frame
+  (interactive)
+  (if (not buffer) (setq buffer (current-buffer)))
+  (bury-buffer)
+  ;; why does save-selected-window not work here ???
+  (save-selected-window
+    (select-window (setup-my-windows))
+    (switch-to-buffer buffer)))
 
 (setq split-window-preferred-function 'my-split-window-sensibly)
 
@@ -161,6 +184,7 @@ window smaller than MIN-HEIGHT lines."
 (global-set-key "\C-x8" (lambda () (interactive) (split-window-n-horizontally 100 50)))
 (global-set-key "\C-x9" 'setup-my-windows)
 (global-set-key "\C-\M-_" (lambda () (interactive) (safe-shrink-window 5)))
+(global-set-key "\C-x_" 'my-display-at-bottom)
 
 (defun my-swap-window-to-right (&optional below)
   "If swap buffer in this window with buffer on the right. If BELOW is set,
@@ -217,8 +241,10 @@ the buffer stack in the current window."
 
 (defun safe-max-window ()
   (interactive)
-  (safe-max-window-horizontally)
-  (maximize-window 5))
+  (maximize-window 5)
+  (condition-case nil
+      (safe-max-window-horizontally)
+    (error nil)))
 
 (global-set-key "\C-x=" 'safe-max-window)
 (global-set-key "\C-x-" 'maximize-window-15)

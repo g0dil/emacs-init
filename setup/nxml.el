@@ -74,11 +74,13 @@
 
 (add-to-list 'hs-special-modes-alist '(nxml-mode ("\\(<[^/>]*>\\)$" 1) "</[^/>]*>$"))
 
-(defun nxml-enable-hs ()
+(defun nxml-setup ()
   (setq nxml-sexp-element-flag t)
-  (hs-minor-mode 1))
+  (hs-minor-mode 1)
+  (setq tab-width 2)
+  (toggle-whitespace-mode 'tabs))
 
-(add-hook 'nxml-mode-hook 'nxml-enable-hs)
+(add-hook 'nxml-mode-hook 'nxml-setup)
 
 (defun hs-nxml-enter ()
   (interactive)

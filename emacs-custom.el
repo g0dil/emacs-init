@@ -34,14 +34,10 @@
  '(diff-mode-hook (quote ((lambda nil (diff-auto-refine-mode 1)))))
  '(diff-switches "-u")
  '(dtrt-indent-mode t nil (dtrt-indent))
+ '(ediff-window-setup-function (quote ediff-setup-windows-plain))
  '(edit-server-done-hook nil)
  '(edit-server-new-frame nil)
  '(fill-column 98)
- '(flymake-allowed-file-name-masks
-   (quote
-    (("\\.java\\'" flymake-simple-make-java-init flymake-simple-java-cleanup)
-     ("[0-9]+\\.tex\\'" flymake-master-tex-init flymake-master-cleanup)
-     ("\\.tex\\'" flymake-simple-tex-init))))
  '(flyspell-delay 30)
  '(flyspell-delayed-commands nil)
  '(frame-background-mode (quote light))
@@ -60,9 +56,9 @@
  '(hs-isearch-open nil)
  '(ido-mode (quote both) nil (ido))
  '(indent-tabs-mode nil)
- '(ispell-dictionary "deutsch8")
+ '(ispell-dictionary "american")
  '(ispell-extra-args (quote ("--sug-mode=ultra")))
- '(ispell-program-name "c:/cygwin/bin/aspell.exe")
+ '(ispell-program-name "aspell")
  '(line-move-visual nil)
  '(ls-lisp-dirs-first t)
  '(magit-default-tracking-name-function (quote magit-default-tracking-name-branch-only))
@@ -82,7 +78,8 @@
  '(rtags-use-helm nil t)
  '(safe-local-variable-values
    (quote
-    ((elisp-project-autoload-file-name . "sqi-autoload.el")
+    ((ispell-local-dictionary . de_DE-neu)
+     (elisp-project-autoload-file-name . "sqi-autoload.el")
      (elisp-project-autoload-file-name . "cc-autoload.el")
      (ccide-auto-format-tag . "auto-uncrustify")
      (ccide-uncrustify-config . "~/src/search.uncrustify")

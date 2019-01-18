@@ -10,3 +10,4 @@
 ;(setq solarized-use-less-bold nil)
 (require 'solarized-light-theme)
 ;(set-face-attribute 'show-paren-match nil :weight 'extra-bold)
+(set-face-attribute 'show-paren-match nil :foreground nil)

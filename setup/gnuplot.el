@@ -5,7 +5,7 @@
                                          buffer-file-name))))
                    (file-name-as-directory "gnuplot"))))
   (add-to-list 'load-path dir)
-  (load (concat dir "autoload.el")))
+  (load (concat dir "load.el")))
 
 (defun gnuplot ()
   (interactive)

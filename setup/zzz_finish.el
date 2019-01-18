@@ -17,3 +17,10 @@
 (defadvice display-buffer-use-some-window (around no-resize activate)
   (flet ((window-resize (&rest args) nil))
     ad-do-it))
+
+; After everybody has had a chance to mess with flymake, remove the flymake modes which just don't work
+(setq flymake-allowed-file-name-masks
+      (loop for elt in flymake-allowed-file-name-masks
+            if (not (member (car elt) '("\\.xml\\'" "\\.html?\\'" "\\.cs\\'" "\\.p[ml]\\'"
+                                        "\\.h\\'" "\\.\\(?:c\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'")))
+            collect elt))

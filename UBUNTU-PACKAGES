@@ -5,3 +5,4 @@ pyflakes
 cmake
 llvm
 libclang-dev
+yaml-mode
