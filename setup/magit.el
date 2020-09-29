@@ -223,11 +223,11 @@
 
 (global-set-key "\C-cGH" 'dired-grep-git-files)
 
-(defun magit-svn-fetch ()
-  (interactive)
-  (magit-run-git-async "svn" "fetch"))
+;; (defun magit-svn-fetch ()
+;;   (interactive)
+;;   (magit-run-git-async "svn" "fetch"))
 
-(define-key magit-mode-map "Nf" 'magit-svn-fetch)
+;; (define-key magit-mode-map "Nf" 'magit-svn-fetch)
 
 (defun magit-quit-window (&optional kill-buffer)
   (interactive "P")
@@ -246,7 +246,8 @@
 
 (defun magit-reset-to-upstream ()
   (interactive)
-  (magit-run-git "reset" "--hard" "@{u}"))
+  (if (yes-or-no-p "Remove local history and hard reset HEAD? ")
+    (magit-run-git "reset" "--hard" "@{u}")))
 
 (magit-define-popup-action 'magit-pull-popup
   ?X "HARD Reset to upstream (force pull after remote rebase)" 'magit-reset-to-upstream)

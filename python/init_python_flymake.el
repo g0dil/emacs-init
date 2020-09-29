@@ -67,13 +67,9 @@
 (defun my-flymake-check-and-wait ()
   (if (boundp flymake-is-running)
       (progn
-        (while flymake-is-running
-          (accept-process-output)
-          (sit-for .1))
+        (while flymake-is-running (sit-for .1))
         (flymake-start-syntax-check)
-        (while flymake-is-running
-          (accept-process-output)
-          (sit-for .1)))))
+        (while flymake-is-running (sit-for .1)))))
 
 (defun my-flymake-goto-next-error ()
   (interactive)
@@ -310,16 +306,16 @@
         (looking-at ".*python3"))
       (string-match-p " 3\." (shell-command-to-string "python --version"))))
 
-(defun flymake-pyflakes-init ()
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                     'flymake-create-temp-inplace))
-         (local-file (file-relative-name
-                      temp-file
-                      (file-name-directory buffer-file-name))))
-    (message "flymake init pyflakes %s" local-file)
-    (list (if (my-python3-p) "pyflakes3" "pyflakes") (list local-file))))
-
 (when (load "flymake" t)
+  (defun flymake-pyflakes-init ()
+    (let* ((py3-p (my-python3-p))
+           (temp-file (flymake-init-create-temp-buffer-copy
+                       'flymake-create-temp-inplace))
+           (local-file (file-relative-name
+                        temp-file
+                        (file-name-directory buffer-file-name))))
+      (message "flymake init pyflakes %s" local-file)
+      (list (if py3-p "pyflakes3" "pyflakes") (list local-file))))
   (add-to-list 'flymake-allowed-file-name-masks
                '("\\.py\\'" flymake-pyflakes-init)))
 

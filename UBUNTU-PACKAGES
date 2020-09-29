@@ -6,3 +6,4 @@ cmake
 llvm
 libclang-dev
 yaml-mode
+libcppunit-dev

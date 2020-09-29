@@ -12,6 +12,7 @@
 
   (setq rtags-path (concat base
                            (file-name-as-directory "rtags")
+                           (file-name-as-directory "build")
                            (file-name-as-directory "bin"))))
 
 (require 'rtags)

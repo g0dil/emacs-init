@@ -7,7 +7,9 @@
 * The rtags tools have to be compiled:
 
     $ cd rtags
-    $ cmake .
-    $ make
+    $ mkdir build
+    $ cd build
+    $ PATH=/usr/lib/llvm-6.0/bin:$PATH cmake ..
+    $ make -j72
 
   To use rtags, the rtags daemon must be started and compilation databases added

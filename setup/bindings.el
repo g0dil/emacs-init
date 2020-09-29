@@ -10,7 +10,19 @@
 (global-set-key "\C-c's" 'flyspell-mode)
 (global-set-key "\C-c'S" 'flyspell-prog-mode)
 (global-set-key "\C-c'a" 'global-auto-revert-mode)
-(global-set-key "\C-cF" 'ffap)
+(global-set-key "\C-cf" 'ffap)
+
+(defun g0dil-fixed-font ()
+  (interactive)
+  (set-frame-font "6x13"))
+
+(defun g0dil-scalable-font()
+  (interactive)
+  (set-frame-font "-PfEd-DejaVu Sans Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1"))
+
+(global-set-key "\C-cFf" 'g0dil-fixed-font)
+(global-set-key "\C-cFs" 'g0dil-scalable-font)
+(global-set-key "\C-cFm" 'menu-set-font)
 
 ;(require 'develock)
 ;(require 'develock-py)
@@ -66,3 +78,8 @@
         do (kill-buffer buffer)))
 
 (global-set-key "\C-xK" 'kill-buffers-in-directory)
+
+(global-unset-key "\C-z")
+(global-unset-key "\C-xz")
+
+(global-set-key "\C-xA" 'org-agenda)
