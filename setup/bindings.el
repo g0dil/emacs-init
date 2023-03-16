@@ -83,3 +83,5 @@
 (global-unset-key "\C-xz")
 
 (global-set-key "\C-xA" 'org-agenda)
+
+(global-set-key "\C-c''" 'electric-pair-mode)

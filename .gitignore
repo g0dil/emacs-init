@@ -8,3 +8,5 @@ bookmarks
 places
 ido.last
 tramp
+.cache/
+.lsp-session*

@@ -45,3 +45,27 @@ url = git://g0dil.de/emacsstuff.git
 [submodule "pyvenv"]
 	path = pyvenv
 	url = https://github.com/jorgenschaefer/pyvenv.git
+[submodule "multi-magit"]
+	path = multi-magit
+	url = https://github.com/luismbo/multi-magit.git
+[submodule "magit-transient"]
+	path = magit-transient
+	url = https://github.com/magit/transient.git
+[submodule "jsonnet-mode"]
+	path = jsonnet-mode
+	url = https://github.com/tminor/jsonnet-mode.git
+[submodule "flycheck-swagger-tools"]
+	path = flycheck-swagger-tools
+	url = https://github.com/magoyette/flycheck-swagger-tools.git
+[submodule "gitlab-ci-mode-flycheck"]
+	path = gitlab-ci-mode-flycheck
+	url = https://gitlab.com/joewreschnig/gitlab-ci-mode-flycheck.git
+[submodule "gitlab-ci-mode"]
+	path = gitlab-ci-mode
+	url = https://gitlab.com/joewreschnig/gitlab-ci-mode.git
+[submodule "openapi-yaml-mode"]
+	path = openapi-yaml-mode
+	url = https://github.com/magoyette/openapi-yaml-mode.git
+[submodule "yaml-mode"]
+	path = yaml-mode
+	url = https://github.com/yoshiki/yaml-mode.git

@@ -22,6 +22,22 @@
                                        buffer-file-name))))
                                 "auto-install"))
 
+(add-to-list 'load-path (concat (file-name-directory
+                                 (directory-file-name
+                                  (file-name-directory
+                                   (or load-file-name
+                                       (when (boundp 'bytecomp-filename) bytecomp-filename)
+                                       buffer-file-name))))
+                                "multi-magit"))
+
+(add-to-list 'load-path (concat (file-name-directory
+                                 (directory-file-name
+                                  (file-name-directory
+                                   (or load-file-name
+                                       (when (boundp 'bytecomp-filename) bytecomp-filename)
+                                       buffer-file-name))))
+                                "magit-transient/lisp"))
+
 (require 'cl)
 
 (if (not (functionp 'run-hook-wrapped))
@@ -35,6 +51,7 @@
             '(run open listen connect stop))))
 
 (require 'magit)
+(require 'multi-magit)
 
 ;; Add additional %-escapes ...
 (defun magit-insert-branch-1
@@ -165,6 +182,14 @@
     (grep (format "git ls-files -z | xargs -r0 grep -d skip -nH -E%s -- %s"
                   (if words-only " -w" "") (shell-quote-argument regexp)))))
 
+(defun grep-in-git-repo-recursive (regexp &optional words-only)
+  (interactive "sGrep files in Git repo regexp: \nP")
+  (let ((default-directory (magit-toplevel default-directory)))
+    (if (not default-directory)
+        (error "not a Git directory"))
+    (grep (format "git ls-files -z --recurse-submodules | xargs -r0 grep -d skip -nH -E%s -- %s"
+                  (if words-only " -w" "") (shell-quote-argument regexp)))))
+
 (setenv "GIT_PAGER" "cat")
 (setenv "GIT_MAN_VIEWER" "woman")
 (setenv "GIT_EDITOR" "emacsclient")
@@ -276,6 +301,22 @@
       (error "current version of file not found"))))
 
 (define-key magit-revision-mode-map (kbd "C-c RET") 'g0dil-magit-diff-jump-to-current)
+
+(defun whitespace-cleanup-file (name)
+  (with-temp-buffer
+    (message "whitespace cleanup %s" name)
+    (insert-file-contents name)
+    (whitespace-cleanup)
+    (write-file name)))
+
+(defun git-whitespace-cleanup-all ()
+  (interactive)
+  (let ((default-directory (magit-toplevel default-directory)))
+    (if (not default-directory)
+      (error "not a Git directory"))
+    (loop for name in (git-repo-files)
+          do (if (and (file-exists-p name) (not (file-directory-p name)))
+               (whitespace-cleanup-file name)))))
 
 ; ignore whitespace
 ; (setq magit-diff-options '("-w"))

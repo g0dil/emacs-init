@@ -1,0 +1,2 @@
+;;; Generated package description from archive-phar.el  -*- no-byte-compile: t -*-
+(define-package "archive-phar" "20221009.2129" "Phar file support for archive-mode" '((emacs "28.1") (php-runtime "0.2") (datetime-format "0.0.1")) :commit "0bda3e338446d06dbe9d8c8837dee746de48632f" :maintainer '("USAMI Kenta" . "tadsan@zonu.me") :keywords '("files") :url "https://github.com/emacs-php/archive-phar.el")

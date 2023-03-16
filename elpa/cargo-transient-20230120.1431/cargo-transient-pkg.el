@@ -1,0 +1,2 @@
+;;; Generated package description from cargo-transient.el  -*- no-byte-compile: t -*-
+(define-package "cargo-transient" "20230120.1431" "A transient UI for Cargo, Rust's package manager" '((emacs "28.1")) :commit "f0295aee41404ffb2e8532948becf78d405e4ee9" :authors '(("Peter Stuart" . "peter@peterstuart.org")) :maintainer '("Peter Stuart" . "peter@peterstuart.org") :url "https://github.com/peterstuart/cargo-transient")

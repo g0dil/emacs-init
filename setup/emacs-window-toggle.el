@@ -6,4 +6,4 @@
                           buffer-file-name))))
                    "emacs-window-toggle/")))
   (load (concat dir "emacs-window-toggle.el"))
-  (global-set-key "\C-c\C-\\" 'toggle-windows-split))
+  (global-set-key "\C-c\C-]" 'toggle-windows-split))

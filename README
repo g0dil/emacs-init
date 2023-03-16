@@ -13,3 +13,7 @@
     $ make -j72
 
   To use rtags, the rtags daemon must be started and compilation databases added
+
+* for swagger-flycheck, we need swagger0tools
+
+    $ npm install -g swagger-tools

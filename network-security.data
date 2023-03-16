@@ -1,0 +1,4 @@
+(
+ (:id "sha1:efc5d5d0e39b90cdec0b2afe634db2e678719b40" :fingerprints ("sha1:ca:34:72:7b:3b:ce:22:46:3b:48:e2:1f:1b:c1:5d:5e:4a:b8:0f:1a" :none "sha1:e2:de:a6:3e:bf:8c:63:be:3e:84:57:0e:3c:fb:61:2b:4f:72:9c:41") :host "mail-out.j32.de:25" :conditions (:self-signed :no-host-match :unknown-ca :invalid :verify-cert))
+ (:id "sha1:ac7feb949147490ee549b5b6c3ae7edd929ea335" :fingerprint "sha1:d2:1a:01:45:2b:5a:9b:06:10:69:46:93:0e:64:71:78:69:ff:7a:e0" :host "news.gmane.org:nntp" :conditions (:self-signed :expired :unknown-ca :invalid))
+)

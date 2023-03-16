@@ -17,8 +17,8 @@
 (autoload 'pymacs-load "pymacs" nil t)
 ;;(eval-after-load "pymacs"
 ;;  '(add-to-list 'pymacs-load-path YOUR-PYMACS-DIRECTORY"))
-(pymacs-load "ropemacs" "rope-")
-(setq ropemacs-enable-autoimport t)
+;(pymacs-load "ropemacs" "rope-")
+;(setq ropemacs-enable-autoimport t)
 
 ;; M-/               rope-code-assist
 ;; C-c g             rope-goto-definition
@@ -26,7 +26,7 @@
 ;; C-c f             rope-find-occurrences
 ;; M-?               rope-lucky-assist
 
-(define-key ropemacs-local-keymap "\M-/" 'hippie-expand)
+;(define-key ropemacs-local-keymap "\M-/" 'hippie-expand)
 
 (defun write-file-py-cleanup-imports ()
   (save-excursion
@@ -39,10 +39,10 @@
   (add-hook 'write-contents-functions 'write-file-py-cleanup-imports nil t))
 
 (defun my-flymake-error-at-point ()
-  (condition-case  nil
-      (flymake-ler-text (car (nth 0 (flymake-find-err-info flymake-err-info
-                                                           (locate-current-line-number)))))
-    (error (error "no flymake error at point"))))
+  (let ((errors (flymake-diagnostics (point))))
+    (if errors
+      (flymake-diagnostic-text (car errors))
+      (error (error "no flymake error at point")))))
 
 (defun my-flymake-show-error ()
   (interactive)
@@ -211,6 +211,12 @@
 
 (add-hook 'python-mode-hook 'python-init-auto-cleanup-imports-on-save)
 
+(defun my-maybe-fill-region-as-paragrah ()
+  (interactive)
+  (if (use-region-p)
+    (call-interactively 'fill-region-as-paragraph)
+    (call-interactively 'python-docstring-fill)))
+
 (defun py-setup-hook ()
   ;(set-variable 'py-indent-offset 4)
   ;(set-variable 'py-smart-indentation nil)
@@ -218,12 +224,14 @@
   ;(define-key py-mode-map (kbd "RET") 'newline-and-indent)
   ;(define-key py-mode-map [tab] 'yas/expand)
   ;(setq yas/after-exit-snippet-hook 'indent-according-to-mode)
-  ;(smart-operator-mode-on)
+                                        ;(smart-operator-mode-on)
+  (python-docstring-mode 1)
   (define-key python-mode-map "\C-ci" 'my-pyflymake-add-import-from-error)
   (define-key python-mode-map "\C-ce" 'my-flymake-show-error)
   (define-key python-mode-map "\C-cn" 'my-flymake-goto-next-error)
   (define-key python-mode-map "\C-cp" 'my-flymake-goto-prev-error)
   (define-key python-mode-map "\C-cI" 'py-cleanup-imports)
+  (define-key python-docstring-mode-map "\M-q" 'my-maybe-fill-region-as-paragrah)
 )
 
 (add-hook 'python-mode-hook 'py-setup-hook)

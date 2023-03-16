@@ -1,0 +1,2 @@
+;;; Generated package description from cargo-mode.el  -*- no-byte-compile: t -*-
+(define-package "cargo-mode" "20230213.401" "Cargo Major Mode. Cargo is the Rust package manager" '((emacs "25.1")) :commit "6e128f08692aae5723122e039e8871a57141e868" :authors '(("Ayrat Badykov" . "ayratin555@gmail.com")) :maintainer '("Ayrat Badykov" . "ayratin555@gmail.com") :keywords '("tools") :url "https://github.com/ayrat555/cargo-mode")

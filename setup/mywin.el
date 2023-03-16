@@ -183,7 +183,7 @@ window smaller than MIN-HEIGHT lines."
 (global-set-key "\C-x7" 'split-window-3-horizontally)
 (global-set-key "\C-x8" (lambda () (interactive) (split-window-n-horizontally 100 50)))
 (global-set-key "\C-x9" 'setup-my-windows)
-(global-set-key "\C-\M-_" (lambda () (interactive) (safe-shrink-window 5)))
+;(global-set-key [(ctrl meta ?_)] (lambda () (interactive) (safe-shrink-window 5)))
 (global-set-key "\C-x_" 'my-display-at-bottom)
 
 (defun my-swap-window-to-right (&optional below)

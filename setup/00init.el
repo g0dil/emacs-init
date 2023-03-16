@@ -11,3 +11,13 @@
 (setenv "LANG" nil)
 (prefer-coding-system 'utf-8)
 (menu-bar-mode -1)
+
+(defun make-obsolete-variable-opt-when (orig obsolete-name current-name &optional when &rest args)
+  (apply orig obsolete-name current-name (or when "undefined") args))
+
+(advice-add 'make-obsolete-variable :around 'make-obsolete-variable-opt-when)
+
+(defun make-obsolete-opt-when (orig obsolete-name current-name &optional when &rest args)
+  (apply orig obsolete-name current-name (or when "undefined") args)
+)
+(advice-add 'make-obsolete :around 'make-obsolete-opt-when)
