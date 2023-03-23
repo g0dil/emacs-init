@@ -20,8 +20,9 @@
  (magit-merge nil)
  (magit-pull nil
              ("--rebase"))
- (magit-push nil
-             ("--force-with-lease"))
+ (magit-push
+  ("--force-with-lease")
+  nil)
  (magit-rebase nil)
  (magit-remote
   ("-f"))
