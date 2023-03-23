@@ -1,6 +1,6 @@
 [submodule "magit"]
 	   path = magit
-	   url = git://github.com/magit/magit.git
+	   url = https://github.com/magit/magit.git
 [submodule "emacsstuff"]
 	   path = emacsstuff
 	   url = ../emacsstuff
