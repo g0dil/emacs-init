@@ -1,7 +1,5 @@
-dash-el
 pymacs
-python-ropemacs
-pyflakes
+pyflakes3
 cmake
 llvm
 libclang-dev
