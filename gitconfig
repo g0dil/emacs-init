@@ -1,0 +1,50 @@
+[alias]
+	irebase = rebase --interactive --autosquash --autostash
+	lg = "log \
+	    --format='%Cblue%x09%h%Creset %ad %Cred(%aN)       %x09%Creset%s%Cgreen%d%Creset' \
+	    --color --graph --date=short"
+	unmerged-from = "!f() { \
+	    git cherry HEAD \"$@\" \
+		| grep -F + \
+		| cut -d' ' -f2 \
+		| xargs -r -n 1 git lg -n 1; }; f"
+	unmerged-to = "!f() { \
+	    git cherry \"$@\" \
+		| grep -F + \
+		| cut -d' ' -f2 \
+		| xargs -r -n 1 git lg -n 1; }; f"
+	# We use the same message as the last commit so the stash will get the correct name
+	# if no '-m' parameter is specified
+	stash-unstaged = "!f() { \
+	    local msg=\"$(git log --format='%s' -n1)\"; \
+	    git commit --quiet --allow-empty --no-verify --message \"$msg\"; \
+	    git stash push \"$@\"; \
+	    git reset --quiet --soft 'HEAD^'; \
+	}; f"
+	pull-force = "!f() { git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); }; f"
+	remote-update-all = "!find -name build -prune -o -name .git -printf '%h\n' \
+		| while read REPLY; do echo; echo $REPLY':'; git -C $REPLY remote update; done"
+	find-branch-contains = "!f() { git show-ref | awk '{print $2}' \
+		| xargs -rn1 git log --pretty='%H' \"$@\" \
+		| xargs -rn1 git branch -a --contains | sort -u; }; f"
+	commit-wip = "!f() { if [ \"$(git status --porcelain -uno | wc -l)\" -ne 0 ]; then \
+		if [ \"$(git log -n1 --pretty=%s)\" = \"WIP auto\" ]; then \
+			git commit --all --amend --no-edit --reset-author --date=now; else \
+			git commit --all -m \"WIP auto\"; fi; fi; }; f"
+	commit-wip-all = "!f() { (pwd; git submodule foreach --recursive --quiet pwd) | tac \
+		| while read REPLY; do git -C $REPLY commit-wip; done; }; f"
+	uncommit-wip = "!f() { if [ \"$(git log -n1 --pretty=%s)\" = \"WIP auto\" ]; then \
+		git reset HEAD^; fi; }; f"
+	uncommit-wip-all = "!f() { (pwd; git submodule foreach --recursive --quiet pwd) | tac \
+		| while read REPLY; do git -C $REPLY uncommit-wip; done; }; f"
+	push-all = "!f() { (pwd; git submodule foreach --recursive --quiet pwd) | tac \
+		| while read REPLY; do git -C $REPLY push \"$@\"; done; }; f"
+	submodule-updates = "!f() { git -C $1 lg --first-parent \
+		$(git ls-tree --object-only HEAD $1)..origin/master; }; f"
+[fetch]
+	prune = true
+[rerere]
+	enabled = true
+[merge]
+	ff = only
+	conflictstyle = diff3
