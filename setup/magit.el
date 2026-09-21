@@ -42,8 +42,8 @@
 
 (if (not (functionp 'run-hook-wrapped))
     (defun run-hook-wrapped (hook wrap-function &rest args)
-      (loop for fn in hook
-            thereis (apply 'wrap-function fn args))))
+      (cl-loop for fn in hook
+               thereis (apply 'wrap-function fn args))))
 
 (if (not (functionp 'process-live-p))
     (defun process-live-p (process)
@@ -263,19 +263,19 @@
   (magit-diff-working-tree
    (magit-git-string "merge-base" "master" "HEAD") args files))
 
-(magit-define-popup-action 'magit-diff-popup
-  ?m "Diff merge-base master" 'magit-diff-master-mergebase)
+;; (magit-define-popup-action 'magit-diff-popup
+;;   ?m "Diff merge-base master" 'magit-diff-master-mergebase)
 
-(magit-define-popup-switch 'magit-log-popup
-  ?f "first parent" "--first-parent")
+;; (magit-define-popup-switch 'magit-log-popup
+;;   ?f "first parent" "--first-parent")
 
 (defun magit-reset-to-upstream ()
   (interactive)
   (if (yes-or-no-p "Remove local history and hard reset HEAD? ")
     (magit-run-git "reset" "--hard" "@{u}")))
 
-(magit-define-popup-action 'magit-pull-popup
-  ?X "HARD Reset to upstream (force pull after remote rebase)" 'magit-reset-to-upstream)
+;; (magit-define-popup-action 'magit-pull-popup
+;;   ?X "HARD Reset to upstream (force pull after remote rebase)" 'magit-reset-to-upstream)
 
 (require 'ffap)
 
@@ -292,10 +292,10 @@
 
 (defun g0dil-magit-diff-jump-to-current ()
   (interactive)
-  (let ((section-file-name (loop for ident in (magit-section-ident (magit-current-section))
-                                 if (and (consp ident) (eq (car ident) 'file))
-                                 return (cdr ident)
-                                 finally return nil)))
+  (let ((section-file-name (cl-loop for ident in (magit-section-ident (magit-current-section))
+                                    if (and (consp ident) (eq (car ident) 'file))
+                                    return (cdr ident)
+                                    finally return nil)))
     (if (ffap-file-exists-string section-file-name)
         (g0dil-goto-equivalent-position section-file-name)
       (error "current version of file not found"))))
@@ -314,9 +314,9 @@
   (let ((default-directory (magit-toplevel default-directory)))
     (if (not default-directory)
       (error "not a Git directory"))
-    (loop for name in (git-repo-files)
-          do (if (and (file-exists-p name) (not (file-directory-p name)))
-               (whitespace-cleanup-file name)))))
+    (cl-loop for name in (git-repo-files)
+             do (if (and (file-exists-p name) (not (file-directory-p name)))
+                  (whitespace-cleanup-file name)))))
 
 ; ignore whitespace
 ; (setq magit-diff-options '("-w"))

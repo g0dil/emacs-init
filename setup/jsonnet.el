@@ -69,7 +69,7 @@
 (defun my-parse-jsonnet-args ()
   (with-syntax-table my-jsonnet-syntax-table
     (save-excursion
-      (loop
+      (cl-loop
          do (c-skip-ws-forward)
          while (looking-at "[(,]")
          do (progn (forward-char 1) (c-skip-ws-forward))
@@ -79,7 +79,7 @@
          if (looking-at "=")
            do (progn (forward-char 1) (c-skip-ws-forward))
            and for dfl =(let ((db (point)))
-                          (loop
+                          (cl-loop
                              do (forward-sexp)
                              do (c-skip-ws-forward)
                              while (not (looking-at "[,)]")))
@@ -94,7 +94,7 @@
     (save-excursion
       (insert "'#" (car fn) "':: __.fn(\n|||\n  " (car fn) "\n|||,\n")
       (if (cdr fn)
-        (loop initially (insert "[")
+        (cl-loop initially (insert "[")
               for (arg . dfl) in (cdr fn)
               do (insert "__.arg('" arg "', __.T.any")
               if dfl do (insert ", default=" (if (string= dfl "null") "__.T.nil" dfl))
@@ -177,3 +177,24 @@
 
 (define-key jsonnet-mode-map "\C-chh" 'my-jsonnet-from-hcl)
 (define-key jsonnet-mode-map "\C-chr" 'my-jsonnet-hcl-ref-at-point)
+
+;;; LSP integration
+
+(require 'lsp-mode)
+(require 'lsp-origami)
+
+(defun jsonnet-lsp-setup ()
+  (add-to-list 'lsp-language-id-configuration '(jsonnet-mode . "jsonnet") t)
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection "jsonnet-language-server")
+                    :activation-fn (lsp-activate-on "jsonnet")
+                    :server-id 'jsonnet-ls)))
+
+(with-eval-after-load 'jsonnet-mode (jsonnet-lsp-setup))
+
+(add-hook 'lsp-after-open-hook #'lsp-origami-try-enable)
+
+(defun jsonnet-enable-lsp ()
+  (lsp-mode 1))
+
+(add-hook 'jsonnet-mode-hook 'jsonnet-enable-lsp)

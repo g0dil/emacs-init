@@ -1,0 +1,2 @@
+;; Generated package description from codex-ide.el  -*- mode: lisp-data; no-byte-compile: t; lexical-binding:t -*-
+(define-package "codex-ide" "0.1.3" "Run Codex CLI in a terminal" '((emacs "29.1") (compat "29.1.4.2") (keymap-popup "0.4.0") (eat "0.9.4")) :commit "6954c5c7e2cd8332f26edcd1823aef239e559f0b" :maintainer '("Thanos Apollo" . "public@thanosapollo.org") :keywords '("ai" "codex" "tools" "terminal") :url "https://git.thanosapollo.org/emacs-codex-ide")

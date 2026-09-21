@@ -1,0 +1,73 @@
+                         ━━━━━━━━━━━━━━━━━━━━━━
+                          EMACS-CODEX-IDE NEWS
+                         ━━━━━━━━━━━━━━━━━━━━━━
+
+
+1 Version 0.1.3 (2026-09-04)
+════════════════════════════
+
+  • Validate supplied MCP argument types before invoking tools, and
+    require an explicit buffer or path for structured edits.
+  • Support stateless MCP 2026-07-28 while preserving legacy
+    initialization.
+  • Roll back structured MCP edits when editing or indentation fails.
+  • Avoid leaking output buffers for empty MCP execution requests.
+  • Read complete rollout metadata up to one MiB and report oversized
+    lines.
+  • Apply the resume limit to matching sessions, so unrelated activity
+    does not hide older project sessions; collect timestamps once before
+    sorting.
+
+
+2 Version 0.1.2 (2026-09-02)
+════════════════════════════
+
+2.1 Sessions
+────────────
+
+  • Use concise project-based buffer names and add stable root
+    identities only when equal basenames collide.
+  • Preserve session ownership across recovery, replacement, and cleanup
+    paths.
+
+
+2.2 MCP and permissions
+───────────────────────
+
+  • Restore the full local MCP control tool set and add YOLO mode.
+  • Harden MCP and session lifecycle cleanup.
+
+
+2.3 Menu
+────────
+
+  • Present boolean options as popup switches.
+
+
+3 Version 0.1.1 (2026-08-13)
+════════════════════════════
+
+3.1 Terminal backends
+─────────────────────
+
+  • Added optional vterm support.  Eat remains the default and required
+    terminal backend.
+  • Kept terminal process ownership and session cleanup consistent
+    across backends.
+
+
+3.2 Packaging
+─────────────
+
+  • Raised the minimum supported Emacs version to 29.1.
+  • Added package autoload generation and validation to the Nix package.
+  • Added package-lint to the project release gates.
+
+
+3.3 MCP and context
+───────────────────
+
+  • Restricted the local MCP server to loopback bind addresses.
+  • Fixed MCP endpoint URLs for the IPv6 loopback address.
+  • Documented compatibility with current and legacy Codex context IPC
+    paths.

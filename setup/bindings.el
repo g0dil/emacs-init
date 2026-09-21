@@ -85,3 +85,38 @@
 (global-set-key "\C-xA" 'org-agenda)
 
 (global-set-key "\C-c''" 'electric-pair-mode)
+
+(defun my-scan-diff-lines (direction &optional move)
+  (save-excursion
+    (beginning-of-line)
+    (car (last (cl-loop while (looking-at "[ \t\r]*[+-]")
+                        do (if move (forward-line direction))
+                        collect (point)
+                        do (if (not move) (forward-line direction)))))))
+
+(require 'ediff)
+
+(defun my-ediff-unified-diff-region ()
+  "Diff unified-diff like region in current buffer."
+  (interactive)
+  (let* ((b (my-scan-diff-lines -1))
+         (e (my-scan-diff-lines 1 t))
+         (m (and b e (save-excursion
+                       (goto-char b)
+                       (back-to-indentation)
+                       (re-search-forward (format "^[ \t\r]*[^ \t\r%s]" (string (char-after))) e 'move)
+                       (beginning-of-line)
+                       (point)))))
+    (if (or (not b) (not e))
+      (error "Not in unified-diff like region"))
+    (let ((buffer-A (ediff-make-cloned-buffer (current-buffer) "-Region.A-"))
+          (buffer-B (ediff-make-cloned-buffer (current-buffer) "-Region.B-")))
+      (ediff-with-current-buffer buffer-A
+        (setq ediff-temp-indirect-buffer t))
+      (ediff-with-current-buffer buffer-B
+        (setq ediff-temp-indirect-buffer t))
+      (ediff-regions-internal (get-buffer buffer-A) b m
+                              (get-buffer buffer-B) m e
+                              nil 'ediff-regions-linewise 'line-mode nil))))
+
+(global-set-key "\C-xD" 'my-ediff-unified-diff-region)
